@@ -98,7 +98,7 @@ BOOL CHearthstoneBotDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
-	GetLogPath(GetCurrentUserName());
+	SearchLogFiles(GetCurrentUserNamePath());
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -151,22 +151,48 @@ HCURSOR CHearthstoneBotDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-char* CHearthstoneBotDlg::GetCurrentUserName() {
+CString CHearthstoneBotDlg::GetCurrentUserNamePath() {
 	TCHAR username[UNLEN + 1];
 	DWORD size = UNLEN + 1;
 	GetUserName((TCHAR*)username, &size);
-
+	char pathBuffer[MAX_BUFFER_SIZE] = {'\0', };
 	char userName[UNLEN + 1] = {'\0', };
 
 	WideCharToMultiByte(CP_ACP, 0, username, UNLEN + 1, userName, UNLEN + 1, NULL, NULL);
 	printf("current user name: %s\n", userName);
-	return userName;
+	sprintf(pathBuffer, "C:\\Users\\%s\\AppData\\Local\\Blizzard\\Hearthstone\\Logs\\*.log", userName);
+	printf("log saved path: %s\n", pathBuffer);
+
+	CString path = CString(pathBuffer);
+	return path;
 }
 
-char* CHearthstoneBotDlg::GetLogPath(char *currentUserName) {
-//C:\Users\stori\AppData\Local\Blizzard\Hearthstone\Logs
-	char pathBuffer[MAX_BUFFER_SIZE] = {'\0', };
-	sprintf(pathBuffer, "C:\\Users\\stori\\AppData\\Local\\Blizzard\\Hearthstone\\Logs", currentUserName);
-	printf("log saved path: %s\n", pathBuffer);
-	return pathBuffer;
+void CHearthstoneBotDlg::SearchLogFiles(CString absolutePath) {
+	printf("searching path: %s\n", absolutePath);
+
+	CFileFind fileFinder;
+
+	BOOL fileAvailable = fileFinder.FindFile(absolutePath);
+
+	if(fileAvailable) {
+		printf("there is some files\n");
+
+		while(fileAvailable) {
+			fileAvailable = fileFinder.FindNextFile();
+
+			if(fileFinder.IsArchived()) {
+				CString fileName =  fileFinder.GetFileName();
+
+				printf("file name: %s\n", fileName);
+				lastestFileName = fileName;
+			}
+		}
+
+		printf("search end\n");
+	}
+	else {
+		printf("cannot see any file\n");
+	}
+
+	printf("latest file name: %s\n", lastestFileName);
 }

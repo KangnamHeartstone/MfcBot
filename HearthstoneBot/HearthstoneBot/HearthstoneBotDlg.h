@@ -4,6 +4,7 @@
 #include <windows.h>
 #include <Lmcons.h>
 #include <iostream>
+#include <cstring>
 
 #define MAX_BUFFER_SIZE 512
 #pragma once
@@ -14,12 +15,12 @@ class CHearthstoneBotDlg : public CDialogEx
 // 생성입니다.
 public:
 	CHearthstoneBotDlg(CWnd* pParent = NULL);	// 표준 생성자입니다.
-	
+	CString lastestFileName;
 // 대화 상자 데이터입니다.
 	enum { IDD = IDD_HEARTHSTONEBOT_DIALOG };
 	void ReadLogRealtime();
-	char *GetCurrentUserName();
-	char *GetLogPath(char *);
+	CString GetCurrentUserNamePath();
+	void SearchLogFiles(CString );
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 지원입니다.
 
