@@ -153,7 +153,7 @@ HCURSOR CHearthstoneBotDlg::OnQueryDragIcon()
 }
 
 
-void image() {
+void imageDown() {
 	HANDLE hWaitEvent = CreateEvent(NULL, TRUE, FALSE, _T("GIFW_01"));
 	HINTERNET hInternet;
 	hInternet = InternetOpen(_T("Å·°«¿¥Æä·¯À§½À"), PRE_CONFIG_INTERNET_ACCESS, NULL, INTERNET_INVALID_PORT_NUMBER, 0);
@@ -195,4 +195,99 @@ void image() {
 	::InternetCloseHandle(hInternet);
 
 	CloseHandle(hWaitEvent);
+}
+
+
+struct TempImageData {
+	int size;
+	char data[1024];
+};
+
+DWORD CHearthstoneBotDlg::GetImageFromWeb(CPtrList *parmList) {
+	HANDLE hWaitEvent = CreateEvent(NULL, TRUE, FALSE, _T("GIFW_01"));
+	DWORD totalSize = 0;
+	HINTERNET hInternet = InternetOpen(_T("Å·°«¿¥Æä·¯À§½À"), PRE_CONFIG_INTERNET_ACCESS, NULL, INTERNET_INVALID_PORT_NUMBER, 0);
+
+	HINTERNET hConnect = ::InternetConnectA(hInternet, "http://media.services.zam.com", INTERNET_INVALID_PORT_NUMBER, "", "", INTERNET_SERVICE_HTTP, 0 ,0);
+	
+	HINTERNET hHttpFile = ::HttpOpenRequest(hConnect, "GET", _T("/v1/media/byName/hs/cards/enus/CS2_231.png"), HTTP_VERSION, NULL, 0, INTERNET_FLAG_DONT_CACHE, 0);
+
+	BOOL requestFlag = ::HttpSendRequest(hHttpFile, NULL, 0, 0, 0);
+
+	if(requestFlag == TRUE) {
+		TempImageData *pBuffer = new TempImageData;
+		char errorCount = 0;
+		DWORD readByte = 0, bufferSize = 1024;
+
+		while(::InternetReadFile(hHttpFile, pBuffer, bufferSize, &readByte)) {
+			if(readByte <= 0)
+				delete pBuffer;
+			else {
+				totalSize += readByte;
+				pBuffer->size = readByte;
+				parmList->AddTail(pBuffer);
+			}
+			pBuffer = new TempImageData;
+			
+			if(readByte < 1024) {
+				errorCount++;
+				if(errorCount > 5)
+					break;
+				else
+					::WaitForSingleObject(hWaitEvent, 50);
+			}
+			else
+				errorCount = 0;
+		}
+		delete pBuffer;
+
+		::InternetCloseHandle(hHttpFile);
+	}
+
+	::InternetCloseHandle(hConnect);
+	::InternetCloseHandle(hInternet);
+	
+	CloseHandle(hWaitEvent);
+
+	return totalSize;
+}
+
+void CHearthstoneBotDlg::LoadImageToPtrList(CPtrList *parmList, DWORD parmTotalSize) {
+	HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, parmTotalSize);
+	if(NULL != hGlobal) {
+		char *pData = (char *)GlobalLock(hGlobal);
+
+		if(NULL != pData) {
+			TempImageData *pBuffer = NULL;
+			int currentPos = 0;
+			while(!parmList->IsEmpty()) {
+				pBuffer = (TempImageData *)parmList->RemoveHead();
+
+				memcpy(pData + currentPos, pBuffer->data, pBuffer->size);
+				currentPos += pBuffer->size;
+			}
+			GlobalUnlock(hGlobal);
+		}
+
+		LPSTREAM pStream = NULL;
+
+		HRESULT hResult = CreateStreamOnHGlobal(hGlobal, TRUE, &pStream);
+		if(SUCCEEDED(hResult) && pStream) {
+			::OleLoadPicture(pStream, parmTotalSize, FALSE, IID_IPicture, (LPVOID *)&mp_image_object);
+			pStream->Release();
+
+			if(SUCCEEDED(hResult) && mp_image_object) {
+				mp_image_object->get_Width(&m_logical_width);
+				mp_image_object->get_Height(&m_logical_height);
+
+				CClientDC dc(this);
+
+				m_real_width = MulDiv(m_logical_width, dc.GetDeviceCaps(LOGPIXELSX), HIMETRIC_INCH);
+				m_real_height = MulDiv(m_logical_height, dc.GetDeviceCaps(LOGPIXELSY), HIMETRIC_INCH);
+
+				InvalidateRect(m_display_rect);
+			}
+		}
+		GlobalFree(hGlobal);
+	}
 }

@@ -8,6 +8,10 @@
 // CHearthstoneBotDlg 대화 상자
 class CHearthstoneBotDlg : public CDialogEx
 {
+private:
+	LPPICTURE mp_image_object;
+	long m_logical_width, m_logical_height, m_real_width, m_real_height;
+	CRect m_display_rect;
 // 생성입니다.
 public:
 	CHearthstoneBotDlg(CWnd* pParent = NULL);	// 표준 생성자입니다.
