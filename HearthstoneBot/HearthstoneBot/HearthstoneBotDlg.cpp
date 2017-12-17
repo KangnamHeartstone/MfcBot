@@ -98,7 +98,7 @@ BOOL CHearthstoneBotDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
-	GetCurrentUserName();
+	GetLogPath(GetCurrentUserName());
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -161,4 +161,12 @@ char* CHearthstoneBotDlg::GetCurrentUserName() {
 	WideCharToMultiByte(CP_ACP, 0, username, UNLEN + 1, userName, UNLEN + 1, NULL, NULL);
 	printf("current user name: %s\n", userName);
 	return userName;
+}
+
+char* CHearthstoneBotDlg::GetLogPath(char *currentUserName) {
+//C:\Users\stori\AppData\Local\Blizzard\Hearthstone\Logs
+	char pathBuffer[MAX_BUFFER_SIZE] = {'\0', };
+	sprintf(pathBuffer, "C:\\Users\\stori\\AppData\\Local\\Blizzard\\Hearthstone\\Logs", currentUserName);
+	printf("log saved path: %s\n", pathBuffer);
+	return pathBuffer;
 }

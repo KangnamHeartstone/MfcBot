@@ -5,6 +5,7 @@
 #include <Lmcons.h>
 #include <iostream>
 
+#define MAX_BUFFER_SIZE 512
 #pragma once
 
 // CHearthstoneBotDlg 대화 상자
@@ -18,6 +19,7 @@ public:
 	enum { IDD = IDD_HEARTHSTONEBOT_DIALOG };
 	void ReadLogRealtime();
 	char *GetCurrentUserName();
+	char *GetLogPath(char *);
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 지원입니다.
 
