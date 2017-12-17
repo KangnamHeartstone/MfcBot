@@ -98,7 +98,9 @@ BOOL CHearthstoneBotDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
+	latestFileName = "";
 	SearchLogFiles(GetCurrentUserNamePath());
+	RealtimeLogRead();
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -160,19 +162,18 @@ CString CHearthstoneBotDlg::GetCurrentUserNamePath() {
 
 	WideCharToMultiByte(CP_ACP, 0, username, UNLEN + 1, userName, UNLEN + 1, NULL, NULL);
 	printf("current user name: %s\n", userName);
-	sprintf(pathBuffer, "C:\\Users\\%s\\AppData\\Local\\Blizzard\\Hearthstone\\Logs\\*.log", userName);
-	printf("log saved path: %s\n", pathBuffer);
+	sprintf(pathBuffer, "C:\\Users\\%s\\AppData\\Local\\Blizzard\\Hearthstone\\Logs\\", userName);
+	wcout << "log saved path: " << pathBuffer << endl;
 
 	CString path = CString(pathBuffer);
 	return path;
 }
 
 void CHearthstoneBotDlg::SearchLogFiles(CString absolutePath) {
-	printf("searching path: %s\n", absolutePath);
-
+	wcout << "searching path: " << absolutePath.GetString() << endl;
 	CFileFind fileFinder;
 
-	BOOL fileAvailable = fileFinder.FindFile(absolutePath);
+	BOOL fileAvailable = fileFinder.FindFile(absolutePath + "*.log");
 
 	if(fileAvailable) {
 		printf("there is some files\n");
@@ -183,8 +184,8 @@ void CHearthstoneBotDlg::SearchLogFiles(CString absolutePath) {
 			if(fileFinder.IsArchived()) {
 				CString fileName =  fileFinder.GetFileName();
 
-				printf("file name: %s\n", fileName);
-				lastestFileName = fileName;
+				wcout << "file name: " << fileName.GetString() << endl;
+				latestFileName = absolutePath + fileName;
 			}
 		}
 
@@ -194,5 +195,27 @@ void CHearthstoneBotDlg::SearchLogFiles(CString absolutePath) {
 		printf("cannot see any file\n");
 	}
 
-	printf("latest file name: %s\n", lastestFileName);
+	wcout << "latest file path: " << latestFileName.GetString() << endl;
+}
+
+void CHearthstoneBotDlg::RealtimeLogRead() {
+	BOOL status;
+	CString logData;
+	printf("==========read log data===========\n");
+	if(latestFileName != "") {
+		CStdioFile file(latestFileName, CFile::modeRead | CFile::typeText);
+
+		while(1)
+		{
+			status = file.ReadString(logData);
+			if(status) {
+				//wcout << logData.GetString() << endl;
+			}
+		}
+		file.Close();
+	}
+	else {
+		printf("empty path accepted\n");
+	}
+	printf("end of read log\n");
 }
