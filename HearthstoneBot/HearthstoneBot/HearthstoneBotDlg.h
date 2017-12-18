@@ -34,6 +34,8 @@ public:
 	CString latestFileName;
 	BOOL running;
 	CardData fieldCard[SIZE_OF_FIELD];
+	Json::Reader jsonReader;
+	Json::Value jsonRoot;
 	//char readBuffer[JSON_BUFFER_SIZE];
 // 대화 상자 데이터입니다.
 	static UINT ThreadFirst(LPVOID paramas);
@@ -49,6 +51,7 @@ public:
 	void SearchCardData(CString cardData, CardData &);
 	CString ReadJsonAsString();
 	bool ReadFromFile(const char* filename, char* buffer, int len);
+	void InitJsonLoader();
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 지원입니다.
 

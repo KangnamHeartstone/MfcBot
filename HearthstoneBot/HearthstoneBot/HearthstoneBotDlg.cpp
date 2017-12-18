@@ -102,6 +102,7 @@ BOOL CHearthstoneBotDlg::OnInitDialog()
 	latestFileName = "";
 	SearchLogFiles(GetCurrentUserNamePath());
 	//RealtimeLogRead();
+	InitJsonLoader();
 	SearchCardData(CString("HERO_01"), fieldCard[0]);
 	CWinThread *pThread = AfxBeginThread(ThreadFirst, this);
 
@@ -303,9 +304,23 @@ bool CHearthstoneBotDlg::ReadFromFile(const char* filename, char* buffer, int le
     return true;
 }
 
+void CHearthstoneBotDlg::InitJsonLoader() {
+	
+	ifstream cardJsonFile(CARD_JSON_FILE);
+	cardJsonFile >> jsonRoot;
+	
+	int rootCategorySize = jsonRoot.size();
+	cout << "===========json loader===========" << endl;
+	cout << "root size: " << rootCategorySize << endl;
+	int i;
+	vector<string> rootJsonMembers = jsonRoot.getMemberNames();
+	for(i = 0; i < rootJsonMembers.size(); i += 1) {
+		cout << "cate #" << i << " : " << rootJsonMembers[i] << endl;
+	}
+	cout << "=================================" << endl;
+}
+
 void CHearthstoneBotDlg::SearchCardData(CString cardData, CardData &savePoint) {
-	Json::Reader jsonReader;
-	Json::Value jsonRoot;
 	//CString cardJsonStr = ReadJsonAsString();
 	//string cardJsonStringData = CT2CA(cardJsonStr.operator LPCWSTR());
 	/*
@@ -314,17 +329,8 @@ void CHearthstoneBotDlg::SearchCardData(CString cardData, CardData &savePoint) {
 
 	int rootCategorySize = jsonRoot.size();
 	cout << "root size: " << rootCategorySize << endl;*/
-	
-	ifstream cardJsonFile(CARD_JSON_FILE);
-	cardJsonFile >> jsonRoot;
-	
-	int rootCategorySize = jsonRoot.size();
-	cout << "root size: " << rootCategorySize << endl;
-	int i;
 	vector<string> rootJsonMembers = jsonRoot.getMemberNames();
-	for(i = 0; i < rootJsonMembers.size(); i += 1) {
-		cout << "cate #" << i << " : " << rootJsonMembers[i] << endl;
-	}
+
 }
 
 void CHearthstoneBotDlg::DetectFieldCard(CString logMessage) {
@@ -360,6 +366,7 @@ void CHearthstoneBotDlg::DetectTurns(CString logMessage) {
 				fieldCard[i].SetAttack(0);
 				fieldCard[i].SetCardID(CString(""));
 				fieldCard[i].SetCardName(CString(""));
+				fieldCard[i].SetImgUrl(CString(""));
 				fieldCard[i].SetHealth(0);
 			}
 		}

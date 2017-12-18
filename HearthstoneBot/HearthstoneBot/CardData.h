@@ -2,9 +2,9 @@
 class CardData {
 	int attack, health;
 	CString cardID, cardName;
-
+	CString imgUrl;
 public:
-	CardData(CString cardID = CString(""), CString cardName = CString(""), int attack = 0, int health = 0) {
+	CardData(CString cardID = CString(""), CString cardName = CString(""), CString imgUrl = CString(""), int attack = 0, int health = 0) {
 	}
 
 	int GetAttack() {
@@ -23,6 +23,10 @@ public:
 		return cardName;
 	}
 
+	CString GetImgUrl() {
+		return imgUrl;
+	}
+
 	void SetAttack(int attack) {
 		this->attack = attack;
 	}
@@ -37,5 +41,9 @@ public:
 
 	void SetCardName(CString cardName) {
 		this->cardName = cardName;
+	}
+
+	void SetImgUrl(CString imgUrl) {
+		this->imgUrl = imgUrl;
 	}
 };
