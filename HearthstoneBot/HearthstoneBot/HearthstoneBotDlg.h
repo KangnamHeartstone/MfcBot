@@ -9,7 +9,10 @@
 #include <string>
 #include <codecvt>
 #include <iomanip>
+#include "include\json\json.h"
 #include "CardData.h"
+
+#pragma comment(lib, "json_vc71_libmtd")
 
 using namespace std;
 
