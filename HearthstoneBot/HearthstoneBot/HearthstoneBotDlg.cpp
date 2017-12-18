@@ -334,8 +334,8 @@ void CHearthstoneBotDlg::SearchCardData(CString cardId, CardData &savePoint) {
 				int attack, health;
 				CString imgUrl, name;
 
-				attack = indexOfSeries[t].get("attack", -1).asInt();
-				health = indexOfSeries[t].get("health", -1).asInt();
+				attack = indexOfSeries[t].get("attack", NOT_AVAILABLE).asInt();
+				health = indexOfSeries[t].get("health", NOT_AVAILABLE).asInt();
 				imgUrl = indexOfSeries[t].get("img", "").asCString();
 				name = indexOfSeries[t].get("name", "").asCString();
 
@@ -385,11 +385,11 @@ void CHearthstoneBotDlg::DetectTurns(CString logMessage) {
 			wcout << "[DetectTurns] rdy for tracking field" << endl;
 			int i;
 			for(i = 0; i < SIZE_OF_FIELD; i += 1) {
-				fieldCard[i].SetAttack(0);
+				fieldCard[i].SetAttack(NOT_AVAILABLE);
 				fieldCard[i].SetCardID(CString(""));
 				fieldCard[i].SetCardName(CString(""));
 				fieldCard[i].SetImgUrl(CString(""));
-				fieldCard[i].SetHealth(0);
+				fieldCard[i].SetHealth(NOT_AVAILABLE);
 			}
 		}
 	}
