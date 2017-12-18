@@ -164,8 +164,12 @@ void CHearthstoneBotDlg::CalculateRunner() {
 	for(i = 0; i < 2;i += 1) {
 		for(t = 0; t < FIELD_LINE_SIZE; t += 1) {
 			fieldAttackInfo[i][t] = NOT_AVAILABLE;
+			bestFieldAttackInfo[i][t] = NOT_AVAILABLE;
 		}
 	}
+
+	bestFieldAttackInfo[0][0] = -987654321;
+	bestFieldAttackInfo[1][0] = -987654321;
 	
 	cout << "=============Player #" << playerNumber << "=============" << endl;
 	RecursiveSetAttackTarget(0, playerNumber);
@@ -174,11 +178,56 @@ void CHearthstoneBotDlg::CalculateRunner() {
 	RecursiveSetAttackTarget(0, playerNumber);
 }
 
+int CHearthstoneBotDlg::PredictCardSwap(int playerNumber) {
+	int enemyNumber = (playerNumber + 1) % 2, i, positiveSum = 0, negativeSum = 0;
+	CardData fieldCardSwap[SIZE_OF_FIELD];
+	for(i = 0; i < SIZE_OF_FIELD; i += 1) {
+		fieldCardSwap[i] = fieldCard[i];
+	}
+	for(i = 1; i < FIELD_LINE_SIZE; i += 1) {
+		if(fieldAttackInfo[playerNumber][i] > 0) {//if player card, attack target selected
+			int attackEnemyCard = enemyNumber * FIELD_LINE_SIZE + fieldAttackInfo[playerNumber][i];
+			int attackPlayerCard = playerNumber * FIELD_LINE_SIZE + i;
+			if(fieldCardSwap[attackEnemyCard].GetHealth() > 0) {// attack target health > 0
+				fieldCardSwap[attackEnemyCard].SetHealth(fieldCardSwap[attackEnemyCard].GetHealth() - fieldCardSwap[attackPlayerCard].GetAttack());
+				fieldCardSwap[attackPlayerCard].SetHealth(fieldCardSwap[attackPlayerCard].GetHealth() - fieldCardSwap[attackEnemyCard].GetAttack());
+			}
+		}
+	}
+
+	for(i = 1; i < FIELD_LINE_SIZE; i += 1) {
+		if(!fieldCardSwap[playerNumber * FIELD_LINE_SIZE + i].GetCardID().IsEmpty()) {
+			int health = fieldCardSwap[playerNumber * FIELD_LINE_SIZE + i].GetHealth();
+			if(health < 0) {
+				health = 0;
+			}
+			positiveSum = positiveSum + health;
+		}
+		if(!fieldCardSwap[enemyNumber * FIELD_LINE_SIZE + i].GetCardID().IsEmpty()) {
+			int health = fieldCardSwap[enemyNumber * FIELD_LINE_SIZE + i].GetHealth();
+			if(health > 0) {
+				negativeSum = negativeSum + fieldCardSwap[enemyNumber * FIELD_LINE_SIZE + i].GetAttack();
+			}
+		}
+	}
+
+	return positiveSum - negativeSum;
+}
+
 void CHearthstoneBotDlg::RecursiveSetAttackTarget(int level, int playerNumber) {
-	int nowFocusIndex = playerNumber * FIELD_LINE_SIZE + level, i, enemyNumber = (playerNumber + 1) % 2;
+	int nowFocusIndex = playerNumber * FIELD_LINE_SIZE + level, i, enemyNumber = (playerNumber + 1) % 2, score;
 	if(level >= FIELD_LINE_SIZE) {
 		for(i = 0; i < FIELD_LINE_SIZE; i += 1) {
 			cout << setw(3) << setfill(' ') << fieldAttackInfo[playerNumber][i] << "|" ;
+		}
+		score = PredictCardSwap(playerNumber);
+		cout << " <--- " << score ;
+		if(bestFieldAttackInfo[playerNumber][0] < score) {
+			bestFieldAttackInfo[playerNumber][0] = score;
+			cout << " new best";
+			for(i = 1; i < FIELD_LINE_SIZE; i += 1) {
+				bestFieldAttackInfo[playerNumber][i] = fieldAttackInfo[playerNumber][i];
+			}
 		}
 		cout << endl;
 		return;

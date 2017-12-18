@@ -39,6 +39,7 @@ public:
 	Json::Value jsonRoot;
 	BOOL startCalculate;
 	int fieldAttackInfo[2][FIELD_LINE_SIZE];
+	int bestFieldAttackInfo[2][FIELD_LINE_SIZE];
 	//char readBuffer[JSON_BUFFER_SIZE];
 // 대화 상자 데이터입니다.
 	static UINT ThreadFirst(LPVOID paramas);
@@ -57,6 +58,7 @@ public:
 	void InitJsonLoader();
 	void CalculateRunner();
 	void RecursiveSetAttackTarget(int, int);
+	int PredictCardSwap(int );
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 지원입니다.
 
