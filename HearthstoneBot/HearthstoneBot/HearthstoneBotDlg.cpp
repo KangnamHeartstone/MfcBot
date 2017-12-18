@@ -103,7 +103,6 @@ BOOL CHearthstoneBotDlg::OnInitDialog()
 	SearchLogFiles(GetCurrentUserNamePath());
 	//RealtimeLogRead();
 	InitJsonLoader();
-	SearchCardData(CString("HERO_01"), fieldCard[0]);
 	CWinThread *pThread = AfxBeginThread(ThreadFirst, this);
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
@@ -320,17 +319,37 @@ void CHearthstoneBotDlg::InitJsonLoader() {
 	cout << "=================================" << endl;
 }
 
-void CHearthstoneBotDlg::SearchCardData(CString cardData, CardData &savePoint) {
-	//CString cardJsonStr = ReadJsonAsString();
-	//string cardJsonStringData = CT2CA(cardJsonStr.operator LPCWSTR());
-	/*
-	ReadFromFile(CARD_JSON_FILE, readBuffer, JSON_BUFFER_SIZE);
-	bool jsonParsingResult = jsonReader.parse(readBuffer, jsonRoot);
-
-	int rootCategorySize = jsonRoot.size();
-	cout << "root size: " << rootCategorySize << endl;*/
+void CHearthstoneBotDlg::SearchCardData(CString cardId, CardData &savePoint) {
 	vector<string> rootJsonMembers = jsonRoot.getMemberNames();
+	int i, t;
+	bool endOfSearch = false;
+	for(i = 0; i < rootJsonMembers.size(); i += 1) {
+		Json::Value indexOfSeries = jsonRoot[rootJsonMembers[i]];
+		//cout << "Series of " << rootJsonMembers[i] << " size: " << indexOfSeries.size() << endl;
+		for(t = 0; t < indexOfSeries.size(); t += 1) {
+			string indexOfCardIdStr = indexOfSeries[t].get("cardId", "").asCString();
+			CString indexOfCardId(indexOfCardIdStr.c_str());
+			if(cardId.Compare(indexOfCardId) == CSTRING_EQUAL) {
+				endOfSearch = true;
+				int attack, health;
+				CString imgUrl, name;
 
+				attack = indexOfSeries[t].get("attack", -1).asInt();
+				health = indexOfSeries[t].get("health", -1).asInt();
+				imgUrl = indexOfSeries[t].get("img", "").asCString();
+				name = indexOfSeries[t].get("name", "").asCString();
+
+				savePoint.SetAttack(attack);
+				savePoint.SetCardName(name);
+				savePoint.SetHealth(health);
+				savePoint.SetImgUrl(imgUrl);
+				break;
+			}
+		}
+		if(endOfSearch) {
+			break;
+		}
+	}
 }
 
 void CHearthstoneBotDlg::DetectFieldCard(CString logMessage) {
@@ -345,6 +364,9 @@ void CHearthstoneBotDlg::DetectFieldCard(CString logMessage) {
 		if(!zonePosition.IsEmpty() && !cardId.IsEmpty() && !player.IsEmpty()) {
 			int playerNumber = _ttoi(player), zonePositionNumber = _ttoi(zonePosition);
 			fieldCard[(playerNumber - 1) * 8 + zonePositionNumber].SetCardID(cardId);
+
+			CString searchTargetId = fieldCard[(playerNumber - 1) * 8 + zonePositionNumber].GetCardID();
+			SearchCardData(searchTargetId, fieldCard[(playerNumber - 1) * 8 + zonePositionNumber]);
 		}
 	}
 }
