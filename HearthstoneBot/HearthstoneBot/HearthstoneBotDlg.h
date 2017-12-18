@@ -36,6 +36,7 @@ public:
 	CardData fieldCard[SIZE_OF_FIELD];
 	Json::Reader jsonReader;
 	Json::Value jsonRoot;
+	BOOL startCalculate;
 	//char readBuffer[JSON_BUFFER_SIZE];
 // 대화 상자 데이터입니다.
 	static UINT ThreadFirst(LPVOID paramas);
@@ -52,6 +53,7 @@ public:
 	CString ReadJsonAsString();
 	bool ReadFromFile(const char* filename, char* buffer, int len);
 	void InitJsonLoader();
+	void CalculateRunner();
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 지원입니다.
 

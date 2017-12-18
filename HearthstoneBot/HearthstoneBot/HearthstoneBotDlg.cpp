@@ -100,6 +100,7 @@ BOOL CHearthstoneBotDlg::OnInitDialog()
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 	latestFileName = "";
+	startCalculate = false;
 	SearchLogFiles(GetCurrentUserNamePath());
 	//RealtimeLogRead();
 	InitJsonLoader();
@@ -157,6 +158,9 @@ HCURSOR CHearthstoneBotDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+void CHearthstoneBotDlg::CalculateRunner() {
+	cout << "=============Calculate field=============" << endl;
+}
 
 CString CHearthstoneBotDlg::GetCurrentUserNamePath() {
 	TCHAR username[UNLEN + 1];
@@ -230,6 +234,11 @@ UINT CHearthstoneBotDlg::ThreadFirst(LPVOID paramas) {
 				CString logData = buffer;
 				currentDlg->DetectFieldCard(logData);
 				currentDlg->DetectTurns(logData);
+				if(currentDlg->startCalculate) {
+					// start calculate
+					currentDlg->startCalculate = false;
+					currentDlg->CalculateRunner();
+				}
 				//if (!ifs.eof()) break; // Ensure end of read was EOF.
 				ifs.clear();
 				Sleep(1);
@@ -380,6 +389,7 @@ void CHearthstoneBotDlg::DetectTurns(CString logMessage) {
 		if(value.Compare(CString("MAIN_START_TRIGGERS")) == CSTRING_EQUAL) {
 			wcout << "[DetectTurns] end of tracking field" << endl;
 			PrintFieldPretty();
+			startCalculate = true;
 		}
 		else if(value.Compare(CString("MAIN_READY")) == CSTRING_EQUAL) {
 			wcout << "[DetectTurns] rdy for tracking field" << endl;
