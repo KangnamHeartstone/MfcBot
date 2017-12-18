@@ -99,6 +99,7 @@
     <None Include="res\HearthstoneBot.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CardData.h" />
     <ClInclude Include="HearthstoneBot.h" />
     <ClInclude Include="HearthstoneBotDlg.h" />
     <ClInclude Include="Resource.h" />

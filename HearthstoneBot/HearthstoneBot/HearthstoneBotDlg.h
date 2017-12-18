@@ -8,6 +8,7 @@
 #include <fstream>
 #include <string>
 #include <codecvt>
+#include "CardData.h"
 
 using namespace std;
 
