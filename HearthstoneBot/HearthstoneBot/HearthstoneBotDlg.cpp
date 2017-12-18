@@ -160,6 +160,42 @@ HCURSOR CHearthstoneBotDlg::OnQueryDragIcon()
 
 void CHearthstoneBotDlg::CalculateRunner() {
 	cout << "=============Calculate field=============" << endl;
+	int i, t, playerNumber = 0;
+	for(i = 0; i < 2;i += 1) {
+		for(t = 0; t < FIELD_LINE_SIZE; t += 1) {
+			fieldAttackInfo[i][t] = NOT_AVAILABLE;
+		}
+	}
+	
+	cout << "=============Player #" << playerNumber << "=============" << endl;
+	RecursiveSetAttackTarget(0, playerNumber);
+	playerNumber = (playerNumber + 1) % 2;
+	cout << "=============Player #" << playerNumber << "=============" << endl;
+	RecursiveSetAttackTarget(0, playerNumber);
+}
+
+void CHearthstoneBotDlg::RecursiveSetAttackTarget(int level, int playerNumber) {
+	int nowFocusIndex = playerNumber * FIELD_LINE_SIZE + level, i, enemyNumber = (playerNumber + 1) % 2;
+	if(level >= FIELD_LINE_SIZE) {
+		for(i = 0; i < FIELD_LINE_SIZE; i += 1) {
+			cout << setw(3) << setfill(' ') << fieldAttackInfo[playerNumber][i] << "|" ;
+		}
+		cout << endl;
+		return;
+	}
+
+	if(!fieldCard[nowFocusIndex].GetCardID().IsEmpty() && level != 0) {//player not empty
+		for(i = 0; i < FIELD_LINE_SIZE; i += 1) {
+			if(!fieldCard[enemyNumber * FIELD_LINE_SIZE + i].GetCardID().IsEmpty()) { //enemy not empty
+				fieldAttackInfo[playerNumber][level] = i;
+				RecursiveSetAttackTarget(level + 1, playerNumber);
+			}
+		}
+	}
+	else {
+		RecursiveSetAttackTarget(level + 1, playerNumber);
+	}
+	fieldAttackInfo[playerNumber][level] = NOT_AVAILABLE;
 }
 
 CString CHearthstoneBotDlg::GetCurrentUserNamePath() {
