@@ -63,6 +63,7 @@ BEGIN_MESSAGE_MAP(CHearthstoneBotDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 
@@ -100,7 +101,9 @@ BOOL CHearthstoneBotDlg::OnInitDialog()
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 	latestFileName = "";
 	SearchLogFiles(GetCurrentUserNamePath());
-	RealtimeLogRead();
+	//RealtimeLogRead();
+	CWinThread *pThread = AfxBeginThread(ThreadFirst, this);
+
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -153,6 +156,7 @@ HCURSOR CHearthstoneBotDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
 CString CHearthstoneBotDlg::GetCurrentUserNamePath() {
 	TCHAR username[UNLEN + 1];
 	DWORD size = UNLEN + 1;
@@ -198,24 +202,129 @@ void CHearthstoneBotDlg::SearchLogFiles(CString absolutePath) {
 	wcout << "latest file path: " << latestFileName.GetString() << endl;
 }
 
-void CHearthstoneBotDlg::RealtimeLogRead() {
-	BOOL status;
-	CString logData;
+UINT CHearthstoneBotDlg::ThreadFirst(LPVOID paramas) {
+	CHearthstoneBotDlg *currentDlg = (CHearthstoneBotDlg *)paramas;
 	printf("==========read log data===========\n");
-	if(latestFileName != "") {
-		CStdioFile file(latestFileName, CFile::modeRead | CFile::typeText);
-
-		while(1)
+	if(currentDlg->latestFileName != "") {
+		ifstream ifs(currentDlg->latestFileName);	
+		if (ifs.is_open())
 		{
-			status = file.ReadString(logData);
-			if(status) {
-				//wcout << logData.GetString() << endl;
+			std::string line;
+			while (currentDlg->running)
+			{/*
+				while (getline(ifs, line)) {
+					CString logData(line.c_str());
+					wcout << logData.GetString() << endl;
+					DetectFieldCard(logData);
+					DetectTurns(logData);
+				}*/
+				char c;
+				CString buffer;
+				while(ifs.get(c)) {
+					buffer = buffer + CString(c);
+					if(c == '\n') {
+						break;
+					}
+				}
+				CString logData = buffer;
+				currentDlg->DetectFieldCard(logData);
+				currentDlg->DetectTurns(logData);
+				//if (!ifs.eof()) break; // Ensure end of read was EOF.
+				ifs.clear();
+				Sleep(1);
+				// You may want a sleep in here to avoid
+				// being a CPU hog.
 			}
 		}
-		file.Close();
-	}
-	else {
-		printf("empty path accepted\n");
 	}
 	printf("end of read log\n");
+	return 0;
+}
+
+void CHearthstoneBotDlg::RealtimeLogRead() {
+	printf("==========read log data===========\n");
+	if(latestFileName != "") {
+		ifstream ifs(latestFileName);	
+		if (ifs.is_open())
+		{
+			std::string line;
+			while (true)
+			{/*
+				while (getline(ifs, line)) {
+					CString logData(line.c_str());
+					wcout << logData.GetString() << endl;
+					DetectFieldCard(logData);
+					DetectTurns(logData);
+				}*/
+				char c;
+				CString buffer;
+				while(ifs.get(c)) {
+					buffer = buffer + CString(c);
+					if(c == '\n') {
+						break;
+					}
+				}
+				CString logData = buffer;
+				DetectFieldCard(logData);
+				DetectTurns(logData);
+				//if (!ifs.eof()) break; // Ensure end of read was EOF.
+				ifs.clear();
+
+				// You may want a sleep in here to avoid
+				// being a CPU hog.
+			}
+		}
+	}
+	printf("end of read log\n");
+}
+
+void CHearthstoneBotDlg::DetectFieldCard(CString logMessage) {
+	CString entity, value, zonePosition, cardId, player;
+	entity = GetSubStringPattern(logMessage, CString("TAG_CHANGE Entity="), CString(" tag=NUM_TURNS_IN_PLAY value="));
+	value = GetSubStringPattern(logMessage, CString(" tag=NUM_TURNS_IN_PLAY value="), CString(" \n"));
+	if(!entity.IsEmpty() && !value.IsEmpty()) {
+		zonePosition = GetSubStringPattern(entity, CString(" zonePos="), CString(" cardId="));
+		cardId = GetSubStringPattern(entity, CString(" cardId="), CString(" player="));
+		player = GetSubStringPattern(entity, CString(" player="), CString("]"));
+		wcout << "[DetectFieldCard] entity zonePos: " << zonePosition.GetString() << " card id: " << cardId.GetString() << " player: " << player.GetString() << " val: " << value.GetString() << endl;
+	}
+}
+
+void CHearthstoneBotDlg::DetectTurns(CString logMessage) {
+	CString entity, value;
+	entity = GetSubStringPattern(logMessage, CString("TAG_CHANGE Entity="), CString(" tag=STEP value="));
+	value = GetSubStringPattern(logMessage, CString(" tag=STEP value="), CString(" \n"));
+	if(!entity.IsEmpty() && !value.IsEmpty()) {
+		wcout << "[DetectTurns] val: " << value.GetString() << endl;
+	}
+}
+
+CString CHearthstoneBotDlg::GetSubStringPattern(CString logMessage, CString target, CString nonTarget) {
+	CString result;
+	int targetStartPoint = 0, nonTargetStartPoint = 0, logMessageLen = 0;
+	int targetLength = 0, nonTargetLength = 0;
+	targetStartPoint = logMessage.Find(target);
+	if(nonTarget.IsEmpty()) {
+		nonTargetStartPoint = logMessage.GetLength();
+	}
+	else {
+		nonTargetStartPoint = logMessage.Find(nonTarget);
+	}
+	if(targetStartPoint == NOT_AVAILABLE || nonTargetStartPoint == NOT_AVAILABLE) {
+		return NULL;
+	}
+
+	logMessageLen = logMessage.GetLength();
+	targetLength = target.GetLength();
+	nonTargetLength = nonTarget.GetLength();
+
+	result = logMessage.Mid(targetStartPoint + targetLength, nonTargetStartPoint - (targetStartPoint + targetLength));
+	return result;
+}
+
+void CHearthstoneBotDlg::OnClose()
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	running = false;
+	CDialogEx::OnClose();
 }
