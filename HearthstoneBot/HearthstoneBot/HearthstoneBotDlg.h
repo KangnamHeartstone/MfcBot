@@ -8,12 +8,15 @@
 #include <fstream>
 #include <string>
 #include <codecvt>
+#include <iomanip>
 #include "CardData.h"
 
 using namespace std;
 
 #define MAX_BUFFER_SIZE 512
 #define NOT_AVAILABLE -1
+#define CSTRING_EQUAL 0
+#define SIZE_OF_FIELD 16
 #pragma once
 
 // CHearthstoneBotDlg 대화 상자
@@ -24,6 +27,7 @@ public:
 	CHearthstoneBotDlg(CWnd* pParent = NULL);	// 표준 생성자입니다.
 	CString latestFileName;
 	BOOL running;
+	CardData fieldCard[SIZE_OF_FIELD];
 // 대화 상자 데이터입니다.
 	static UINT ThreadFirst(LPVOID paramas);
 	enum { IDD = IDD_HEARTHSTONEBOT_DIALOG };
@@ -34,6 +38,7 @@ public:
 	void DetectFieldCard(CString );
 	void DetectTurns(CString );
 	CString GetSubStringPattern(CString, CString, CString = CString(""));
+	void PrintFieldPretty();
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 지원입니다.
 

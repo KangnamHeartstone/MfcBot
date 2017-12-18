@@ -212,12 +212,12 @@ UINT CHearthstoneBotDlg::ThreadFirst(LPVOID paramas) {
 			std::string line;
 			while (currentDlg->running)
 			{/*
-				while (getline(ifs, line)) {
-					CString logData(line.c_str());
-					wcout << logData.GetString() << endl;
-					DetectFieldCard(logData);
-					DetectTurns(logData);
-				}*/
+			 while (getline(ifs, line)) {
+			 CString logData(line.c_str());
+			 wcout << logData.GetString() << endl;
+			 DetectFieldCard(logData);
+			 DetectTurns(logData);
+			 }*/
 				char c;
 				CString buffer;
 				while(ifs.get(c)) {
@@ -250,12 +250,12 @@ void CHearthstoneBotDlg::RealtimeLogRead() {
 			std::string line;
 			while (true)
 			{/*
-				while (getline(ifs, line)) {
-					CString logData(line.c_str());
-					wcout << logData.GetString() << endl;
-					DetectFieldCard(logData);
-					DetectTurns(logData);
-				}*/
+			 while (getline(ifs, line)) {
+			 CString logData(line.c_str());
+			 wcout << logData.GetString() << endl;
+			 DetectFieldCard(logData);
+			 DetectTurns(logData);
+			 }*/
 				char c;
 				CString buffer;
 				while(ifs.get(c)) {
@@ -287,6 +287,10 @@ void CHearthstoneBotDlg::DetectFieldCard(CString logMessage) {
 		cardId = GetSubStringPattern(entity, CString(" cardId="), CString(" player="));
 		player = GetSubStringPattern(entity, CString(" player="), CString("]"));
 		wcout << "[DetectFieldCard] entity zonePos: " << zonePosition.GetString() << " card id: " << cardId.GetString() << " player: " << player.GetString() << " val: " << value.GetString() << endl;
+		if(!zonePosition.IsEmpty() && !cardId.IsEmpty() && !player.IsEmpty()) {
+			int playerNumber = _ttoi(player), zonePositionNumber = _ttoi(zonePosition);
+			fieldCard[(playerNumber - 1) * 8 + zonePositionNumber].SetCardID(cardId);
+		}
 	}
 }
 
@@ -296,7 +300,33 @@ void CHearthstoneBotDlg::DetectTurns(CString logMessage) {
 	value = GetSubStringPattern(logMessage, CString(" tag=STEP value="), CString(" \n"));
 	if(!entity.IsEmpty() && !value.IsEmpty()) {
 		wcout << "[DetectTurns] val: " << value.GetString() << endl;
+		if(value.Compare(CString("MAIN_START_TRIGGERS")) == CSTRING_EQUAL) {
+			wcout << "[DetectTurns] end of tracking field" << endl;
+			PrintFieldPretty();
+		}
+		else if(value.Compare(CString("MAIN_READY")) == CSTRING_EQUAL) {
+			wcout << "[DetectTurns] rdy for tracking field" << endl;
+			int i;
+			for(i = 0; i < SIZE_OF_FIELD; i += 1) {
+				fieldCard[i].SetAttack(0);
+				fieldCard[i].SetCardID(CString(""));
+				fieldCard[i].SetCardName(CString(""));
+				fieldCard[i].SetHealth(0);
+			}
+		}
 	}
+}
+
+void CHearthstoneBotDlg::PrintFieldPretty() {
+	int i;
+	for(i = 0; i < SIZE_OF_FIELD / 2; i += 1) {
+		wcout << setw(9) << setfill(L' ') << fieldCard[i].GetCardID().GetString() << "|";
+	}
+	cout << endl;
+	for(i = SIZE_OF_FIELD / 2; i < SIZE_OF_FIELD; i += 1) {
+		wcout << setw(9) << setfill(L' ') << fieldCard[i].GetCardID().GetString() << "|";
+	}
+	cout << endl;
 }
 
 CString CHearthstoneBotDlg::GetSubStringPattern(CString logMessage, CString target, CString nonTarget) {
