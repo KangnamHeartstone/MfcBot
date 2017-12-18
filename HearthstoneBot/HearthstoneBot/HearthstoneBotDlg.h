@@ -9,6 +9,7 @@
 #include <string>
 #include <codecvt>
 #include <iomanip>
+#include <vector>
 #include "json/json.h"
 #include "CardData.h"
 
@@ -20,7 +21,8 @@ using namespace std;
 #define NOT_AVAILABLE -1
 #define CSTRING_EQUAL 0
 #define SIZE_OF_FIELD 16
-#define CARD_JSON_FILE "CardInfo.json"
+#define CARD_JSON_FILE "res/CardInfo.json"
+#define JSON_BUFFER_SIZE 3000000
 #pragma once
 
 // CHearthstoneBotDlg 대화 상자
@@ -32,6 +34,7 @@ public:
 	CString latestFileName;
 	BOOL running;
 	CardData fieldCard[SIZE_OF_FIELD];
+	//char readBuffer[JSON_BUFFER_SIZE];
 // 대화 상자 데이터입니다.
 	static UINT ThreadFirst(LPVOID paramas);
 	enum { IDD = IDD_HEARTHSTONEBOT_DIALOG };
@@ -45,6 +48,7 @@ public:
 	void PrintFieldPretty();
 	void SearchCardData(CString cardData, CardData &);
 	CString ReadJsonAsString();
+	bool ReadFromFile(const char* filename, char* buffer, int len);
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 지원입니다.
 

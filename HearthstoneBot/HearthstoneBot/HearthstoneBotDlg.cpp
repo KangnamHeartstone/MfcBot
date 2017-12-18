@@ -282,7 +282,7 @@ void CHearthstoneBotDlg::RealtimeLogRead() {
 CString CHearthstoneBotDlg::ReadJsonAsString() {
 	CFile file;
 	CString jsonData;
-	if(file.Open(CString(CARD_JSON_FILE), CFile::modeRead))
+	if(file.Open(CString(CARD_JSON_FILE), CFile::modeRead | CFile::typeBinary))
 	{
 		int len = file.GetLength();
 		file.Read(jsonData.GetBuffer(len), len);
@@ -291,15 +291,40 @@ CString CHearthstoneBotDlg::ReadJsonAsString() {
 	return jsonData;
 }
 
+bool CHearthstoneBotDlg::ReadFromFile(const char* filename, char* buffer, int len) {
+    FILE* fp = nullptr;
+    fopen_s(&fp ,filename, "rb");
+    if (fp == nullptr) 
+    {
+        return false;
+    }
+    size_t fileSize = fread(buffer, 1, len, fp);
+    fclose(fp);
+    return true;
+}
+
 void CHearthstoneBotDlg::SearchCardData(CString cardData, CardData &savePoint) {
 	Json::Reader jsonReader;
 	Json::Value jsonRoot;
-	CString cardJsonStr = ReadJsonAsString();
-	string cardJsonStringData = CT2CA(cardJsonStr.operator LPCWSTR());
-	bool jsonParsingResult = jsonReader.parse(cardJsonStringData, jsonRoot);
+	//CString cardJsonStr = ReadJsonAsString();
+	//string cardJsonStringData = CT2CA(cardJsonStr.operator LPCWSTR());
+	/*
+	ReadFromFile(CARD_JSON_FILE, readBuffer, JSON_BUFFER_SIZE);
+	bool jsonParsingResult = jsonReader.parse(readBuffer, jsonRoot);
 
 	int rootCategorySize = jsonRoot.size();
+	cout << "root size: " << rootCategorySize << endl;*/
+	
+	ifstream cardJsonFile(CARD_JSON_FILE);
+	cardJsonFile >> jsonRoot;
+	
+	int rootCategorySize = jsonRoot.size();
 	cout << "root size: " << rootCategorySize << endl;
+	int i;
+	vector<string> rootJsonMembers = jsonRoot.getMemberNames();
+	for(i = 0; i < rootJsonMembers.size(); i += 1) {
+		cout << "cate #" << i << " : " << rootJsonMembers[i] << endl;
+	}
 }
 
 void CHearthstoneBotDlg::DetectFieldCard(CString logMessage) {
