@@ -170,16 +170,34 @@ void CHearthstoneBotDlg::CalculateRunner() {
 
 	bestFieldAttackInfo[0][0] = -987654321;
 	bestFieldAttackInfo[1][0] = -987654321;
+
+	cout << "=============Player #" << playerNumber << "=============" << endl;
+	RecursiveSetAttackTarget(0, playerNumber);
 	
-	cout << "=============Player #" << playerNumber << "=============" << endl;
-	RecursiveSetAttackTarget(0, playerNumber);
 	playerNumber = (playerNumber + 1) % 2;
+
 	cout << "=============Player #" << playerNumber << "=============" << endl;
 	RecursiveSetAttackTarget(0, playerNumber);
+	
+	playerNumber = (playerNumber + 1) % 2;
+
+	cout << "=============Best card swap #" << playerNumber << "=============" << endl;
+	for(i = 0; i < FIELD_LINE_SIZE; i += 1) {
+		cout << setw(3) << setfill(' ') << bestFieldAttackInfo[playerNumber][i] << "|" ;
+	}
+	cout << endl;
+	
+	playerNumber = (playerNumber + 1) % 2;
+
+	cout << "=============Best card swap#" << playerNumber << "=============" << endl;
+	for(i = 0; i < FIELD_LINE_SIZE; i += 1) {
+		cout << setw(3) << setfill(' ') << bestFieldAttackInfo[playerNumber][i] << "|" ;
+	}
+	cout << endl;
 }
 
 int CHearthstoneBotDlg::PredictCardSwap(int playerNumber) {
-	int enemyNumber = (playerNumber + 1) % 2, i, positiveSum = 0, negativeSum = 0;
+	int enemyNumber = (playerNumber + 1) % 2, i, positiveSum = 0, negativeSum = 0, enemyAliveNum = 0;
 	CardData fieldCardSwap[SIZE_OF_FIELD];
 	for(i = 0; i < SIZE_OF_FIELD; i += 1) {
 		fieldCardSwap[i] = fieldCard[i];
@@ -207,29 +225,30 @@ int CHearthstoneBotDlg::PredictCardSwap(int playerNumber) {
 			int health = fieldCardSwap[enemyNumber * FIELD_LINE_SIZE + i].GetHealth();
 			if(health > 0) {
 				negativeSum = negativeSum + fieldCardSwap[enemyNumber * FIELD_LINE_SIZE + i].GetAttack();
+				enemyAliveNum = enemyAliveNum + 1;
 			}
 		}
 	}
 
-	return positiveSum - negativeSum;
+	return positiveSum - negativeSum - enemyAliveNum;
 }
 
 void CHearthstoneBotDlg::RecursiveSetAttackTarget(int level, int playerNumber) {
 	int nowFocusIndex = playerNumber * FIELD_LINE_SIZE + level, i, enemyNumber = (playerNumber + 1) % 2, score;
 	if(level >= FIELD_LINE_SIZE) {
-		for(i = 0; i < FIELD_LINE_SIZE; i += 1) {
+		/*for(i = 0; i < FIELD_LINE_SIZE; i += 1) {
 			cout << setw(3) << setfill(' ') << fieldAttackInfo[playerNumber][i] << "|" ;
-		}
+		}*/
 		score = PredictCardSwap(playerNumber);
-		cout << " <--- " << score ;
+		//cout << " <--- " << score ;
 		if(bestFieldAttackInfo[playerNumber][0] < score) {
 			bestFieldAttackInfo[playerNumber][0] = score;
-			cout << " new best";
+			//cout << " new best";
 			for(i = 1; i < FIELD_LINE_SIZE; i += 1) {
 				bestFieldAttackInfo[playerNumber][i] = fieldAttackInfo[playerNumber][i];
 			}
 		}
-		cout << endl;
+		//cout << endl;
 		return;
 	}
 
@@ -386,22 +405,22 @@ CString CHearthstoneBotDlg::ReadJsonAsString() {
 }
 
 bool CHearthstoneBotDlg::ReadFromFile(const char* filename, char* buffer, int len) {
-    FILE* fp = nullptr;
-    fopen_s(&fp ,filename, "rb");
-    if (fp == nullptr) 
-    {
-        return false;
-    }
-    size_t fileSize = fread(buffer, 1, len, fp);
-    fclose(fp);
-    return true;
+	FILE* fp = nullptr;
+	fopen_s(&fp ,filename, "rb");
+	if (fp == nullptr) 
+	{
+		return false;
+	}
+	size_t fileSize = fread(buffer, 1, len, fp);
+	fclose(fp);
+	return true;
 }
 
 void CHearthstoneBotDlg::InitJsonLoader() {
-	
+
 	ifstream cardJsonFile(CARD_JSON_FILE);
 	cardJsonFile >> jsonRoot;
-	
+
 	int rootCategorySize = jsonRoot.size();
 	cout << "===========json loader===========" << endl;
 	cout << "root size: " << rootCategorySize << endl;
