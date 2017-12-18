@@ -102,6 +102,7 @@ BOOL CHearthstoneBotDlg::OnInitDialog()
 	latestFileName = "";
 	SearchLogFiles(GetCurrentUserNamePath());
 	//RealtimeLogRead();
+	SearchCardData(CString("HERO_01"), fieldCard[0]);
 	CWinThread *pThread = AfxBeginThread(ThreadFirst, this);
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
@@ -278,12 +279,35 @@ void CHearthstoneBotDlg::RealtimeLogRead() {
 	printf("end of read log\n");
 }
 
+CString CHearthstoneBotDlg::ReadJsonAsString() {
+	CFile file;
+	CString jsonData;
+	if(file.Open(CString(CARD_JSON_FILE), CFile::modeRead))
+	{
+		int len = file.GetLength();
+		file.Read(jsonData.GetBuffer(len), len);
+		jsonData.ReleaseBuffer();
+	}
+	return jsonData;
+}
+
+void CHearthstoneBotDlg::SearchCardData(CString cardData, CardData &savePoint) {
+	Json::Reader jsonReader;
+	Json::Value jsonRoot;
+	CString cardJsonStr = ReadJsonAsString();
+	string cardJsonStringData = CT2CA(cardJsonStr.operator LPCWSTR());
+	bool jsonParsingResult = jsonReader.parse(cardJsonStringData, jsonRoot);
+
+	int rootCategorySize = jsonRoot.size();
+	cout << "root size: " << rootCategorySize << endl;
+}
+
 void CHearthstoneBotDlg::DetectFieldCard(CString logMessage) {
 	CString entity, value, zonePosition, cardId, player;
 	entity = GetSubStringPattern(logMessage, CString("TAG_CHANGE Entity="), CString(" tag=NUM_TURNS_IN_PLAY value="));
 	value = GetSubStringPattern(logMessage, CString(" tag=NUM_TURNS_IN_PLAY value="), CString(" \n"));
 	if(!entity.IsEmpty() && !value.IsEmpty()) {
-		zonePosition = GetSubStringPattern(entity, CString(" zonePos="), CString(" cardId="));
+		zonePosition = GetSubStringPattern(entity, CString(" zonePos="), CString(" cardId="));//HERO_01
 		cardId = GetSubStringPattern(entity, CString(" cardId="), CString(" player="));
 		player = GetSubStringPattern(entity, CString(" player="), CString("]"));
 		wcout << "[DetectFieldCard] entity zonePos: " << zonePosition.GetString() << " card id: " << cardId.GetString() << " player: " << player.GetString() << " val: " << value.GetString() << endl;

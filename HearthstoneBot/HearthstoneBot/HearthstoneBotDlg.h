@@ -9,10 +9,10 @@
 #include <string>
 #include <codecvt>
 #include <iomanip>
-#include "include\json\json.h"
+#include "json/json.h"
 #include "CardData.h"
 
-#pragma comment(lib, "json_vc71_libmtd")
+#pragma comment(lib, "json/json_vc71_libmtd.lib")
 
 using namespace std;
 
@@ -20,6 +20,7 @@ using namespace std;
 #define NOT_AVAILABLE -1
 #define CSTRING_EQUAL 0
 #define SIZE_OF_FIELD 16
+#define CARD_JSON_FILE "CardInfo.json"
 #pragma once
 
 // CHearthstoneBotDlg 대화 상자
@@ -42,6 +43,8 @@ public:
 	void DetectTurns(CString );
 	CString GetSubStringPattern(CString, CString, CString = CString(""));
 	void PrintFieldPretty();
+	void SearchCardData(CString cardData, CardData &);
+	CString ReadJsonAsString();
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 지원입니다.
 
