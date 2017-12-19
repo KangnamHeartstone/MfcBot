@@ -6,7 +6,6 @@
 #include "HearthstoneBot.h"
 #include "HearthstoneBotDlg.h"
 #include "afxdialogex.h"
-#include "wininet.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -152,47 +151,3 @@ HCURSOR CHearthstoneBotDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
-void image() {
-	HANDLE hWaitEvent = CreateEvent(NULL, TRUE, FALSE, _T("GIFW_01"));
-	HINTERNET hInternet;
-	hInternet = InternetOpen(_T("Å·°«¿¥Æä·¯À§½À"), PRE_CONFIG_INTERNET_ACCESS, NULL, INTERNET_INVALID_PORT_NUMBER, 0);
-	
-	HINTERNET hConnect = ::InternetConnectA(hInternet, "http://media.services.zam.com", INTERNET_INVALID_PORT_NUMBER, "", "", INTERNET_SERVICE_HTTP, 0 ,0);
-	
-	HINTERNET hHttpFile = ::HttpOpenRequest(hConnect, "GET", _T("/v1/media/byName/hs/cards/enus/CS2_231.png"), HTTP_VERSION, NULL, 0, INTERNET_FLAG_DONT_CACHE, 0);
-
-	BOOL requestFlag = ::HttpSendRequest(hHttpFile, NULL, 0, 0, 0);
-
-	if(requestFlag == TRUE) {
-		FILE *pFile = fopen("CS2_231.png", "wb");
-
-		char buffer[1025], errorCount = 0;
-		DWORD readByte = 0, bufferSize = 1024;
-
-		while(::InternetReadFile(hHttpFile, buffer, bufferSize, &readByte)) {
-			if(readByte > 0 && pFile != NULL)
-				fwrite(buffer, 1, readByte, pFile);
-
-			if(readByte < 1024) {
-				errorCount++;
-				if(errorCount > 5)
-					break;
-				else
-					::WaitForSingleObject(hWaitEvent, 50);
-			}
-			else
-				errorCount = 0;
-		}
-	
-	::InternetCloseHandle(hHttpFile);
-	if(pFile != NULL)
-		fclose(pFile);
-
-	}
-	
-	::InternetCloseHandle(hConnect);
-	::InternetCloseHandle(hInternet);
-
-	CloseHandle(hWaitEvent);
-}
