@@ -8,6 +8,16 @@
 // CHearthstoneBotDlg 대화 상자
 class CHearthstoneBotDlg : public CDialogEx
 {
+private:
+	// 이미지 객체의 포인터를 저장할 변수
+	LPPICTURE mp_image_object;
+	// 읽어들인 이미지의 폭과 높이에 대한 크기 정보
+	long m_logical_width, m_logical_height, m_real_width, m_real_height;
+
+	// 그림이 실제 출력될 위치를 기억할 변수
+	CRect m_display_rect;
+
+
 // 생성입니다.
 public:
 	CHearthstoneBotDlg(CWnd* pParent = NULL);	// 표준 생성자입니다.
@@ -17,7 +27,7 @@ public:
 
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 지원입니다.
-
+	void imageDown();
 
 // 구현입니다.
 protected:
@@ -29,4 +39,9 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+
+	void LoadImageToPtrList(CPtrList *parmList, DWORD parmTotalSize);
+	DWORD GetImageFromWeb(CPtrList *parmList);
+
+public:
 };
