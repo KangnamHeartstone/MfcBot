@@ -79,4 +79,16 @@ public:
 	afx_msg void OnClose();
 	CWebBrowser2 m_card1;
 	CWebBrowser2 m_card2;
+	CWebBrowser2 m_card3;
+	CWebBrowser2 m_card4;
+	CWebBrowser2 m_card5;
+	CWebBrowser2 m_card6;
+	CWebBrowser2 m_card7;
+	CWebBrowser2 m_card8;
+	CWebBrowser2 m_card9;
+	CWebBrowser2 m_card10;
+	CWebBrowser2 m_card11;
+	CWebBrowser2 m_card12;
+	CWebBrowser2 m_card13;
+	CWebBrowser2 m_card14;
 };

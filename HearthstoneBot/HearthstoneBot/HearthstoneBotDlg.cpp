@@ -59,6 +59,19 @@ void CHearthstoneBotDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_EXPLORER2, m_card1);
 	DDX_Control(pDX, IDC_EXPLORER3, m_card2);
+	DDX_Control(pDX, IDC_EXPLORER4, m_card3);
+	DDX_Control(pDX, IDC_EXPLORER5, m_card4);
+	DDX_Control(pDX, IDC_EXPLORER6, m_card5);
+	DDX_Control(pDX, IDC_EXPLORER7, m_card6);
+	DDX_Control(pDX, IDC_EXPLORER8, m_card7);
+	DDX_Control(pDX, IDC_EXPLORER8, m_card7);
+	DDX_Control(pDX, IDC_EXPLORER9, m_card8);
+	DDX_Control(pDX, IDC_EXPLORER10, m_card9);
+	DDX_Control(pDX, IDC_EXPLORER11, m_card10);
+	DDX_Control(pDX, IDC_EXPLORER12, m_card11);
+	DDX_Control(pDX, IDC_EXPLORER13, m_card12);
+	DDX_Control(pDX, IDC_EXPLORER14, m_card13);
+	DDX_Control(pDX, IDC_EXPLORER15, m_card14);
 }
 
 BEGIN_MESSAGE_MAP(CHearthstoneBotDlg, CDialogEx)
@@ -549,10 +562,64 @@ CString CHearthstoneBotDlg::GetSubStringPattern(CString logMessage, CString targ
 }
 
 void CHearthstoneBotDlg::cardOutput() {
-	CString cardName = _T("http://media.services.zam.com/v1/media/byName/hs/cards/enus/animated/HERO_01_premium.gif");
+	CString enemyCardName[7];
+	CString myCardName[7];
 
-	CComVariant var(cardName);
-	m_card1.Navigate2(&var, NULL, NULL, NULL, NULL);
+	//적군 카드
+	enemyCardName[0] = _T("http://media.services.zam.com/v1/media/byName/hs/cards/enus/animated/HERO_09_premium.gif");
+	enemyCardName[1] = _T("http://wow.zamimg.com/images/hearthstone/cards/enus/animated/hexfrog_premium.gif");
+	enemyCardName[2] = _T("http://media.services.zam.com/v1/media/byName/hs/cards/enus/animated/HERO_09_premium.gif");
+	enemyCardName[3] = _T("http://wow.zamimg.com/images/hearthstone/cards/enus/animated/hexfrog_premium.gif");
+	enemyCardName[4] = _T("http://media.services.zam.com/v1/media/byName/hs/cards/enus/animated/HERO_09_premium.gif");
+	enemyCardName[5] = _T("http://wow.zamimg.com/images/hearthstone/cards/enus/animated/hexfrog_premium.gif");
+	enemyCardName[6] = _T("http://media.services.zam.com/v1/media/byName/hs/cards/enus/animated/HERO_09_premium.gif");
+
+
+	//아군 카드
+	myCardName[0] = _T("http://media.services.zam.com/v1/media/byName/hs/cards/enus/animated/HERO_09_premium.gif");
+	myCardName[1] = _T("http://wow.zamimg.com/images/hearthstone/cards/enus/animated/hexfrog_premium.gif");
+	myCardName[2] = _T("http://media.services.zam.com/v1/media/byName/hs/cards/enus/animated/HERO_09_premium.gif");
+	myCardName[3] = _T("http://wow.zamimg.com/images/hearthstone/cards/enus/animated/hexfrog_premium.gif");
+	myCardName[4] = _T("http://media.services.zam.com/v1/media/byName/hs/cards/enus/animated/HERO_09_premium.gif");
+	myCardName[5] = _T("http://media.services.zam.com/v1/media/byName/hs/cards/enus/animated/HERO_09_premium.gif");
+	myCardName[6] = _T("http://wow.zamimg.com/images/hearthstone/cards/enus/animated/hexfrog_premium.gif");
+
+	//적군 카드 링크 불러오기
+	CComVariant Evar1(enemyCardName[0]);
+	CComVariant Evar2(enemyCardName[1]);
+	CComVariant Evar3(enemyCardName[2]);
+	CComVariant Evar4(enemyCardName[3]);
+	CComVariant Evar5(enemyCardName[4]);
+	CComVariant Evar6(enemyCardName[5]);
+	CComVariant Evar7(enemyCardName[6]);
+
+	//아군 카드 링크 불러오기
+	CComVariant Mvar1(myCardName[0]);
+	CComVariant Mvar2(myCardName[1]);
+	CComVariant Mvar3(myCardName[2]);
+	CComVariant Mvar4(myCardName[3]);
+	CComVariant Mvar5(myCardName[4]);
+	CComVariant Mvar6(myCardName[5]);
+	CComVariant Mvar7(myCardName[6]);
+	
+
+	//적군 카드 배치
+	m_card1.Navigate2(&Evar1, NULL, NULL, NULL, NULL);
+	m_card2.Navigate2(&Evar2, NULL, NULL, NULL, NULL);
+	m_card3.Navigate2(&Evar3, NULL, NULL, NULL, NULL);
+	m_card4.Navigate2(&Evar4, NULL, NULL, NULL, NULL);
+	m_card5.Navigate2(&Evar5, NULL, NULL, NULL, NULL);
+	m_card6.Navigate2(&Evar6, NULL, NULL, NULL, NULL);
+	m_card7.Navigate2(&Evar7, NULL, NULL, NULL, NULL);
+
+	//아군 카드 배치
+	m_card8.Navigate2(&Mvar1, NULL, NULL, NULL, NULL);
+	m_card9.Navigate2(&Mvar2, NULL, NULL, NULL, NULL);
+	m_card10.Navigate2(&Mvar3, NULL, NULL, NULL, NULL);
+	m_card11.Navigate2(&Mvar4, NULL, NULL, NULL, NULL);
+	m_card12.Navigate2(&Mvar5, NULL, NULL, NULL, NULL);
+	m_card13.Navigate2(&Mvar6, NULL, NULL, NULL, NULL);
+	m_card14.Navigate2(&Mvar7, NULL, NULL, NULL, NULL);
 }
 
 void CHearthstoneBotDlg::OnClose()
