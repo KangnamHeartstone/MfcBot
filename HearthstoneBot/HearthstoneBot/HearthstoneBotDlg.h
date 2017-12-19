@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include "webbrowser2.h"
 
 
 // CHearthstoneBotDlg 대화 상자
@@ -21,7 +22,7 @@ public:
 
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 지원입니다.
-
+	void imageDown();
 
 // 구현입니다.
 protected:
@@ -33,4 +34,10 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+
+	void LoadImageToPtrList(CPtrList *parmList, DWORD parmTotalSize);
+	DWORD GetImageFromWeb(CPtrList *parmList);
+
+public:
+	CExplorer1 m_my_browser;
 };

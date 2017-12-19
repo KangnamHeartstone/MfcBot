@@ -7,6 +7,8 @@
 #include "HearthstoneBotDlg.h"
 #include "afxdialogex.h"
 #include "wininet.h"
+#pragma comment(lib, "wininet.lib")
+#define HIMETRIC_INCH 2540
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -58,6 +60,7 @@ CHearthstoneBotDlg::CHearthstoneBotDlg(CWnd* pParent /*=NULL*/)
 void CHearthstoneBotDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_EXPLORER1, m_my_browser);
 }
 
 BEGIN_MESSAGE_MAP(CHearthstoneBotDlg, CDialogEx)
@@ -99,7 +102,14 @@ BOOL CHearthstoneBotDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
+	COleSafeArray post_data;
+	COleVariant target_url("http://media.services.zam.com/v1/media/byName/hs/cards/enus/CS2_231.png", VT_BSTR);
+	COleVariant headers((LPCTSTR)NULL, VT_BSTR);
+	COleVariant target_frame_name((LPCTSTR)NULL, VT_BSTR);
+	COleVariant flags((long)0, VT_I4);
 
+	m_my_browser.Navigate2(target_url, flags, target_frame_name, post_data, headers);
+	
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -125,19 +135,12 @@ void CHearthstoneBotDlg::OnPaint()
 	if (IsIconic())
 	{
 		CPaintDC dc(this); // 그리기를 위한 디바이스 컨텍스트입니다.
+		
+		if(mp_image_object != NULL) {
+			mp_image_object->Render(dc.m_hDC, m_display_rect.left, m_display_rect.top, m_display_rect.Width(), m_display_rect.Height(), 0, m_logical_height, m_logical_width, -m_logical_height, NULL);
+		}
+		
 
-		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
-
-		// 클라이언트 사각형에서 아이콘을 가운데에 맞춥니다.
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
-		CRect rect;
-		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
-
-		// 아이콘을 그립니다.
-		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
 	{
@@ -160,7 +163,7 @@ void imageDown() {
 	
 	HINTERNET hConnect = ::InternetConnectA(hInternet, "http://media.services.zam.com", INTERNET_INVALID_PORT_NUMBER, "", "", INTERNET_SERVICE_HTTP, 0 ,0);
 	
-	HINTERNET hHttpFile = ::HttpOpenRequest(hConnect, "GET", _T("/v1/media/byName/hs/cards/enus/CS2_231.png"), HTTP_VERSION, NULL, 0, INTERNET_FLAG_DONT_CACHE, 0);
+	HINTERNET hHttpFile = ::HttpOpenRequest(hConnect, _T("GET"), _T("/v1/media/byName/hs/cards/enus/CS2_231.png"), HTTP_VERSION, NULL, 0, INTERNET_FLAG_DONT_CACHE, 0);
 
 	BOOL requestFlag = ::HttpSendRequest(hHttpFile, NULL, 0, 0, 0);
 
@@ -198,19 +201,20 @@ void imageDown() {
 }
 
 
+
 struct TempImageData {
 	int size;
 	char data[1024];
 };
 
 DWORD CHearthstoneBotDlg::GetImageFromWeb(CPtrList *parmList) {
-	HANDLE hWaitEvent = CreateEvent(NULL, TRUE, FALSE, _T("GIFW_01"));
+	HANDLE hWaitEvent = CreateEvent(NULL, TRUE, FALSE, "CS2_231");
 	DWORD totalSize = 0;
-	HINTERNET hInternet = InternetOpen(_T("킹갓엠페러위습"), PRE_CONFIG_INTERNET_ACCESS, NULL, INTERNET_INVALID_PORT_NUMBER, 0);
+	HINTERNET hInternet = InternetOpen("킹갓엠페러위습", PRE_CONFIG_INTERNET_ACCESS, NULL, INTERNET_INVALID_PORT_NUMBER, 0);
 
 	HINTERNET hConnect = ::InternetConnectA(hInternet, "http://media.services.zam.com", INTERNET_INVALID_PORT_NUMBER, "", "", INTERNET_SERVICE_HTTP, 0 ,0);
 	
-	HINTERNET hHttpFile = ::HttpOpenRequest(hConnect, "GET", _T("/v1/media/byName/hs/cards/enus/CS2_231.png"), HTTP_VERSION, NULL, 0, INTERNET_FLAG_DONT_CACHE, 0);
+	HINTERNET hHttpFile = ::HttpOpenRequest(hConnect, "GET", "/v1/media/byName/hs/cards/enus/CS2_231.png", HTTP_VERSION, NULL, 0, INTERNET_FLAG_DONT_CACHE, 0);
 
 	BOOL requestFlag = ::HttpSendRequest(hHttpFile, NULL, 0, 0, 0);
 
