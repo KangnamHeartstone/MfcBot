@@ -549,15 +549,10 @@ CString CHearthstoneBotDlg::GetSubStringPattern(CString logMessage, CString targ
 }
 
 void CHearthstoneBotDlg::cardOutput() {
-	CString cardName = _T("http://media.services.zam.com/v1/media/byName/hs/cards/enus/HERO_09.png");
-	COleSafeArray post_data;
-	COleVariant target_url(cardName, VT_BSTR);
-	COleVariant headers((LPCTSTR)NULL, VT_BSTR);
-	COleVariant target_frame_name((LPCTSTR)NULL, VT_BSTR);
-	COleVariant flags((long)0, VT_I4);
+	CString cardName = _T("http://media.services.zam.com/v1/media/byName/hs/cards/enus/animated/HERO_01_premium.gif");
 
-	m_card1.Navigate2(target_url, flags, target_frame_name, post_data, headers);
-	m_card2.Navigate2(target_url, flags, target_frame_name, post_data, headers);
+	CComVariant var(cardName);
+	m_card1.Navigate2(&var, NULL, NULL, NULL, NULL);
 }
 
 void CHearthstoneBotDlg::OnClose()
