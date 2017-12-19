@@ -107,6 +107,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CardData.h" />
+    <ClInclude Include="CWebBrowser2.h" />
     <ClInclude Include="HearthstoneBot.h" />
     <ClInclude Include="HearthstoneBotDlg.h" />
     <ClInclude Include="Resource.h" />
@@ -114,6 +115,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CWebBrowser2.cpp" />
     <ClCompile Include="HearthstoneBot.cpp" />
     <ClCompile Include="HearthstoneBotDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -129,7 +131,7 @@
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties RESOURCE_FILE="HearthstoneBot.rc" />
+      <UserProperties RESOURCE_FILE="HearthstoneBot.rc" _x007B_8856F961-340A-11D0-A96B-00C04FD705A2_x007D_="CWebBrowser2" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

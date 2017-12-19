@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "HearthstoneBot.h"
 #include "HearthstoneBotDlg.h"
+#include "CWebBrowser2.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -50,6 +51,7 @@ BOOL CHearthstoneBotApp::InitInstance()
 	InitCommonControlsEx(&InitCtrls);
 
 	CWinApp::InitInstance();
+	AfxEnableControlContainer( );
 
 
 	// 대화 상자에 셸 트리 뷰 또는

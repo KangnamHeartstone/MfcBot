@@ -12,6 +12,7 @@
 #include <vector>
 #include "json/json.h"
 #include "CardData.h"
+#include "cwebbrowser2.h"
 
 #pragma comment(lib, "json/json_vc71_libmtd.lib")
 
@@ -59,6 +60,7 @@ public:
 	void CalculateRunner();
 	void RecursiveSetAttackTarget(int, int);
 	int PredictCardSwap(int );
+	void cardOutput();
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 지원입니다.
 
@@ -75,4 +77,6 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnClose();
+	CWebBrowser2 m_card1;
+	CWebBrowser2 m_card2;
 };

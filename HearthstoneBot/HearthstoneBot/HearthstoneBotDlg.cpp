@@ -57,6 +57,8 @@ CHearthstoneBotDlg::CHearthstoneBotDlg(CWnd* pParent /*=NULL*/)
 void CHearthstoneBotDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_EXPLORER2, m_card1);
+	DDX_Control(pDX, IDC_EXPLORER3, m_card2);
 }
 
 BEGIN_MESSAGE_MAP(CHearthstoneBotDlg, CDialogEx)
@@ -105,6 +107,8 @@ BOOL CHearthstoneBotDlg::OnInitDialog()
 	//RealtimeLogRead();
 	InitJsonLoader();
 	CWinThread *pThread = AfxBeginThread(ThreadFirst, this);
+
+	cardOutput();
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -542,6 +546,18 @@ CString CHearthstoneBotDlg::GetSubStringPattern(CString logMessage, CString targ
 
 	result = logMessage.Mid(targetStartPoint + targetLength, nonTargetStartPoint - (targetStartPoint + targetLength));
 	return result;
+}
+
+void CHearthstoneBotDlg::cardOutput() {
+	CString cardName = _T("http://media.services.zam.com/v1/media/byName/hs/cards/enus/HERO_09.png");
+	COleSafeArray post_data;
+	COleVariant target_url(cardName, VT_BSTR);
+	COleVariant headers((LPCTSTR)NULL, VT_BSTR);
+	COleVariant target_frame_name((LPCTSTR)NULL, VT_BSTR);
+	COleVariant flags((long)0, VT_I4);
+
+	m_card1.Navigate2(target_url, flags, target_frame_name, post_data, headers);
+	m_card2.Navigate2(target_url, flags, target_frame_name, post_data, headers);
 }
 
 void CHearthstoneBotDlg::OnClose()
