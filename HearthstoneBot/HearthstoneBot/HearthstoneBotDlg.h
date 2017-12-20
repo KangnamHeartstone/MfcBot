@@ -20,6 +20,8 @@
 
 using namespace std;
 
+#define DRAW_WIDTH 180
+#define DRAW_HEIGHT 300
 #define READ_BUF_SIZE 1024
 #define MAX_BUFFER_SIZE 512
 #define NOT_AVAILABLE -1

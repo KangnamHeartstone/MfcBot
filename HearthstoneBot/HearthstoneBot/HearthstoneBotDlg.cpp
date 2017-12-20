@@ -121,10 +121,6 @@ BOOL CHearthstoneBotDlg::OnInitDialog()
 	//RealtimeLogRead();
 	InitJsonLoader();
 	CWinThread *pThread = AfxBeginThread(ThreadFirst, this);
-
-	cardOutput();
-
-
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -375,6 +371,7 @@ UINT CHearthstoneBotDlg::ThreadFirst(LPVOID paramas) {
 					currentDlg->CalculateRunner();
 					currentDlg->cardOutput();
 				}
+				ifs.clear();
 				Sleep(1);
 				// You may want a sleep in here to avoid
 				// being a CPU hog.
@@ -632,6 +629,22 @@ void CHearthstoneBotDlg::cardOutput() {
 	CImage enemyImages[7];
 	CImage myCardImages[7];
 
+	enemyCard1.SetBitmap(NULL);
+	enemyCard2.SetBitmap(NULL);
+	enemyCard3.SetBitmap(NULL);
+	enemyCard4.SetBitmap(NULL);
+	enemyCard5.SetBitmap(NULL);
+	enemyCard6.SetBitmap(NULL);
+	enemyCard7.SetBitmap(NULL);
+
+	myCard1.SetBitmap(NULL);
+	myCard2.SetBitmap(NULL);
+	myCard3.SetBitmap(NULL);
+	myCard4.SetBitmap(NULL);
+	myCard5.SetBitmap(NULL);
+	myCard6.SetBitmap(NULL);
+	myCard7.SetBitmap(NULL);
+
 	cout << "=======output card img=======" << endl;
 	for(i = 1; i < FIELD_LINE_SIZE; i += 1) {
 		enemyCardName[i - 1] = fieldCard[FIELD_LINE_SIZE * 0 + i].GetImgUrl();
@@ -653,7 +666,7 @@ void CHearthstoneBotDlg::cardOutput() {
 			size = getFileFromHttp(sz, imgPath);
 			//delete sz;
 			enemyImages[i - 1].Load(CString(imgPath));
-			int dimx = 120, dimy = 200;
+			int dimx = DRAW_WIDTH, dimy = DRAW_HEIGHT;
 			try {
 				if(size > 0) {
 					CDC *screenDC = GetDC();
@@ -707,7 +720,7 @@ void CHearthstoneBotDlg::cardOutput() {
 			//delete sz2;
 			myCardImages[i - 1].Load(CString(imgPath2));
 			
-			int dimx = 120, dimy = 200;
+			int dimx = DRAW_WIDTH, dimy = DRAW_HEIGHT;
 			try {
 				if(size > 0) {
 
@@ -760,7 +773,7 @@ void CHearthstoneBotDlg::cardOutput() {
 	}
 
 
-	Invalidate();
+//	Invalidate();
 	cout << "=======download image resource end=======" << endl;
 }
 
