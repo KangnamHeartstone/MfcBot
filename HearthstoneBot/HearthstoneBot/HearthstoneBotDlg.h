@@ -13,11 +13,14 @@
 #include "json/json.h"
 #include "CardData.h"
 #include "cwebbrowser2.h"
+#include "Wininet.h"
+#include "afxwin.h"
 
 #pragma comment(lib, "json/json_vc71_libmtd.lib")
 
 using namespace std;
 
+#define READ_BUF_SIZE 1024
 #define MAX_BUFFER_SIZE 512
 #define NOT_AVAILABLE -1
 #define CSTRING_EQUAL 0
@@ -41,8 +44,12 @@ public:
 	BOOL startCalculate;
 	int fieldAttackInfo[2][FIELD_LINE_SIZE];
 	int bestFieldAttackInfo[2][FIELD_LINE_SIZE];
+
+	CImage enemyImages[7];
+	CImage myCardImages[7];
 	//char readBuffer[JSON_BUFFER_SIZE];
 // 대화 상자 데이터입니다.
+	int getFileFromHttp(char* pszUrl, char* pszFile);
 	static UINT ThreadFirst(LPVOID paramas);
 	enum { IDD = IDD_HEARTHSTONEBOT_DIALOG };
 	void ReadLogRealtime();
@@ -77,18 +84,18 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnClose();
-	CWebBrowser2 m_card1;
-	CWebBrowser2 m_card2;
-	CWebBrowser2 m_card3;
-	CWebBrowser2 m_card4;
-	CWebBrowser2 m_card5;
-	CWebBrowser2 m_card6;
-	CWebBrowser2 m_card7;
-	CWebBrowser2 m_card8;
-	CWebBrowser2 m_card9;
-	CWebBrowser2 m_card10;
-	CWebBrowser2 m_card11;
-	CWebBrowser2 m_card12;
-	CWebBrowser2 m_card13;
-	CWebBrowser2 m_card14;
+	CStatic enemyCard1;
+	CStatic enemyCard2;
+	CStatic enemyCard3;
+	CStatic enemyCard4;
+	CStatic enemyCard5;
+	CStatic enemyCard6;
+	CStatic enemyCard7;
+	CStatic myCard1;
+	CStatic myCard2;
+	CStatic myCard3;
+	CStatic myCard4;
+	CStatic myCard5;
+	CStatic myCard6;
+	CStatic myCard7;
 };

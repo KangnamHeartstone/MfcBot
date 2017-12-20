@@ -57,21 +57,20 @@ CHearthstoneBotDlg::CHearthstoneBotDlg(CWnd* pParent /*=NULL*/)
 void CHearthstoneBotDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_EXPLORER2, m_card1);
-	DDX_Control(pDX, IDC_EXPLORER3, m_card2);
-	DDX_Control(pDX, IDC_EXPLORER4, m_card3);
-	DDX_Control(pDX, IDC_EXPLORER5, m_card4);
-	DDX_Control(pDX, IDC_EXPLORER6, m_card5);
-	DDX_Control(pDX, IDC_EXPLORER7, m_card6);
-	DDX_Control(pDX, IDC_EXPLORER8, m_card7);
-	DDX_Control(pDX, IDC_EXPLORER8, m_card7);
-	DDX_Control(pDX, IDC_EXPLORER9, m_card8);
-	DDX_Control(pDX, IDC_EXPLORER10, m_card9);
-	DDX_Control(pDX, IDC_EXPLORER11, m_card10);
-	DDX_Control(pDX, IDC_EXPLORER12, m_card11);
-	DDX_Control(pDX, IDC_EXPLORER13, m_card12);
-	DDX_Control(pDX, IDC_EXPLORER14, m_card13);
-	DDX_Control(pDX, IDC_EXPLORER15, m_card14);
+	DDX_Control(pDX, IDC_PICTURE_2, enemyCard1);
+	DDX_Control(pDX, IDC_PICTURE_3, enemyCard2);
+	DDX_Control(pDX, IDC_PICTURE_4, enemyCard3);
+	DDX_Control(pDX, IDC_PICTURE_5, enemyCard4);
+	DDX_Control(pDX, IDC_PICTURE_6, enemyCard5);
+	DDX_Control(pDX, IDC_PICTURE_7, enemyCard6);
+	DDX_Control(pDX, IDC_PICTURE_8, enemyCard7);
+	DDX_Control(pDX, IDC_PICTURE_9, myCard1);
+	DDX_Control(pDX, IDC_PICTURE_10, myCard2);
+	DDX_Control(pDX, IDC_PICTURE_11, myCard3);
+	DDX_Control(pDX, IDC_PICTURE_12, myCard4);
+	DDX_Control(pDX, IDC_PICTURE_13, myCard5);
+	DDX_Control(pDX, IDC_PICTURE_14, myCard6);
+	DDX_Control(pDX, IDC_PICTURE_15, myCard7);
 }
 
 BEGIN_MESSAGE_MAP(CHearthstoneBotDlg, CDialogEx)
@@ -114,6 +113,8 @@ BOOL CHearthstoneBotDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
+	//HBITMAP hbmp = (HBITMAP)::LoadImage(AfxGetInstanceHandle(), CString("res/1.png"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+
 	latestFileName = "";
 	startCalculate = false;
 	SearchLogFiles(GetCurrentUserNamePath());
@@ -122,6 +123,7 @@ BOOL CHearthstoneBotDlg::OnInitDialog()
 	CWinThread *pThread = AfxBeginThread(ThreadFirst, this);
 
 	cardOutput();
+
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -161,11 +163,23 @@ void CHearthstoneBotDlg::OnPaint()
 
 		// 아이콘을 그립니다.
 		dc.DrawIcon(x, y, m_hIcon);
+
+
 	}
 	else
 	{
 		CDialogEx::OnPaint();
 	}
+
+	/*if(!myCardImages[0].IsNull()) {
+	myCard1.SetBitmap(myCardImages[0]);
+	CDC *p = myCard1.GetWindowDC();
+	CDC memDC;
+	memDC.CreateCompatibleDC(p);
+	memDC.SelectObject(&myCardImages[0]);
+	p->BitBlt(0, 0, myCardImages[0].GetWidth(), myCardImages[0].GetHeight(), &memDC, 0, 0, SRCCOPY);
+	myCard1.ReleaseDC(p);
+	}*/
 }
 
 // 사용자가 최소화된 창을 끄는 동안에 커서가 표시되도록 시스템에서
@@ -190,12 +204,12 @@ void CHearthstoneBotDlg::CalculateRunner() {
 
 	cout << "=============Player #" << playerNumber << "=============" << endl;
 	RecursiveSetAttackTarget(0, playerNumber);
-	
+
 	playerNumber = (playerNumber + 1) % 2;
 
 	cout << "=============Player #" << playerNumber << "=============" << endl;
 	RecursiveSetAttackTarget(0, playerNumber);
-	
+
 	playerNumber = (playerNumber + 1) % 2;
 
 	cout << "=============Best card swap #" << playerNumber << "=============" << endl;
@@ -203,7 +217,7 @@ void CHearthstoneBotDlg::CalculateRunner() {
 		cout << setw(3) << setfill(' ') << bestFieldAttackInfo[playerNumber][i] << "|" ;
 	}
 	cout << endl;
-	
+
 	playerNumber = (playerNumber + 1) % 2;
 
 	cout << "=============Best card swap#" << playerNumber << "=============" << endl;
@@ -254,7 +268,7 @@ void CHearthstoneBotDlg::RecursiveSetAttackTarget(int level, int playerNumber) {
 	int nowFocusIndex = playerNumber * FIELD_LINE_SIZE + level, i, enemyNumber = (playerNumber + 1) % 2, score;
 	if(level >= FIELD_LINE_SIZE) {
 		/*for(i = 0; i < FIELD_LINE_SIZE; i += 1) {
-			cout << setw(3) << setfill(' ') << fieldAttackInfo[playerNumber][i] << "|" ;
+		cout << setw(3) << setfill(' ') << fieldAttackInfo[playerNumber][i] << "|" ;
 		}*/
 		score = PredictCardSwap(playerNumber);
 		//cout << " <--- " << score ;
@@ -359,9 +373,8 @@ UINT CHearthstoneBotDlg::ThreadFirst(LPVOID paramas) {
 					// start calculate
 					currentDlg->startCalculate = false;
 					currentDlg->CalculateRunner();
+					currentDlg->cardOutput();
 				}
-				//if (!ifs.eof()) break; // Ensure end of read was EOF.
-				ifs.clear();
 				Sleep(1);
 				// You may want a sleep in here to avoid
 				// being a CPU hog.
@@ -561,65 +574,194 @@ CString CHearthstoneBotDlg::GetSubStringPattern(CString logMessage, CString targ
 	return result;
 }
 
+int CHearthstoneBotDlg::getFileFromHttp(char* pszUrl, char* pszFile)
+{
+	HINTERNET    hInet, hUrl;
+	DWORD        dwReadSize = 0;
+
+	// WinINet함수 초기화 
+	if ((hInet = InternetOpen(_T("Temp"),            // user agent in the HTTP protocol
+		INTERNET_OPEN_TYPE_DIRECT,    // AccessType
+		NULL,                        // ProxyName
+		NULL,                        // ProxyBypass
+		0)) != NULL)                // Options
+	{
+		// 입력된 HTTP주소를 열기
+		if ((hUrl = InternetOpenUrl(hInet,        // 인터넷 세션의 핸들
+			CString(pszUrl),                        // URL
+			NULL,                        // HTTP server에 보내는 해더
+			0,                            // 해더 사이즈
+			0,                            // Flag
+			0)) != NULL)                // Context
+		{
+			FILE    *fp;
+
+			// 다운로드할 파일 만들기
+			if ((fp = fopen(pszFile, "wb")) != NULL)
+			{
+				TCHAR    szBuff[READ_BUF_SIZE];
+				DWORD    dwSize;
+				DWORD    dwDebug = 10;
+
+				do {
+					// 웹상의 파일 읽기
+					InternetReadFile(hUrl, szBuff, READ_BUF_SIZE, &dwSize);
+
+					// 웹상의 파일을 만들어진 파일에 써넣기
+					fwrite(szBuff, dwSize, 1, fp);
+
+					dwReadSize += dwSize;
+				} while ((dwSize != 0) || (--dwDebug != 0));
+
+				fclose( fp );
+			}
+			// 인터넷 핸들 닫기
+			InternetCloseHandle(hUrl);
+		}
+		// 인터넷 핸들 닫기
+		InternetCloseHandle(hInet);
+	}
+	return(dwReadSize);
+}
+
 void CHearthstoneBotDlg::cardOutput() {
+	int i;
 	CString enemyCardName[7];
 	CString myCardName[7];
 
-	//적군 카드
-	enemyCardName[0] = _T("http://media.services.zam.com/v1/media/byName/hs/cards/enus/animated/HERO_09_premium.gif");
-	enemyCardName[1] = _T("http://wow.zamimg.com/images/hearthstone/cards/enus/animated/hexfrog_premium.gif");
-	enemyCardName[2] = _T("http://media.services.zam.com/v1/media/byName/hs/cards/enus/animated/HERO_09_premium.gif");
-	enemyCardName[3] = _T("http://wow.zamimg.com/images/hearthstone/cards/enus/animated/hexfrog_premium.gif");
-	enemyCardName[4] = _T("http://media.services.zam.com/v1/media/byName/hs/cards/enus/animated/HERO_09_premium.gif");
-	enemyCardName[5] = _T("http://wow.zamimg.com/images/hearthstone/cards/enus/animated/hexfrog_premium.gif");
-	enemyCardName[6] = _T("http://media.services.zam.com/v1/media/byName/hs/cards/enus/animated/HERO_09_premium.gif");
+	CImage enemyImages[7];
+	CImage myCardImages[7];
+
+	cout << "=======output card img=======" << endl;
+	for(i = 1; i < FIELD_LINE_SIZE; i += 1) {
+		enemyCardName[i - 1] = fieldCard[FIELD_LINE_SIZE * 0 + i].GetImgUrl();
+		myCardName[i - 1] = fieldCard[FIELD_LINE_SIZE * 1 + i].GetImgUrl();
+
+		if(!enemyImages[i - 1].IsNull()) {
+			enemyImages[i - 1].Detach();
+		}
+		if(!myCardImages[i - 1].IsNull()) {
+			myCardImages[i - 1].Detach();
+		}
+
+		if(!enemyCardName[i - 1].IsEmpty()) {
+			char imgPath[12] = {'\0', };
+			int len = enemyCardName[i - 1].GetLength(), size = 0;
+			char *sz = new char[len];
+			sprintf(sz, "%S", enemyCardName[i - 1]);
+			sprintf(imgPath, "res/%d.png", i);
+			size = getFileFromHttp(sz, imgPath);
+			//delete sz;
+			enemyImages[i - 1].Load(CString(imgPath));
+			int dimx = 120, dimy = 200;
+			try {
+				if(size > 0) {
+					CDC *screenDC = GetDC();
+					CDC mDC;
+					mDC.CreateCompatibleDC(screenDC);
+					CBitmap b;
+					b.CreateCompatibleBitmap(screenDC, dimx, dimy);
+
+					CBitmap *pob = mDC.SelectObject(&b);
+					mDC.SetStretchBltMode(HALFTONE);
+					enemyImages[i - 1].StretchBlt(mDC.m_hDC, 0, 0, dimx, dimy, 0, 0, enemyImages[i - 1].GetWidth(), enemyImages[i - 1].GetHeight(), SRCCOPY);
+					mDC.SelectObject(pob);
+					if(i == 1) {
+						enemyCard1.SetBitmap((HBITMAP)b.Detach());
+					}
+					else if(i == 2) {
+						enemyCard2.SetBitmap((HBITMAP)b.Detach());
+					}
+					else if(i == 3) {
+						enemyCard3.SetBitmap((HBITMAP)b.Detach());
+					}
+					else if(i == 4) {
+						enemyCard4.SetBitmap((HBITMAP)b.Detach());
+					}
+					else if(i == 5) {
+						enemyCard5.SetBitmap((HBITMAP)b.Detach());
+					}
+					else if(i == 6) {
+						enemyCard6.SetBitmap((HBITMAP)b.Detach());
+					}
+					else if(i == 7) {
+						enemyCard7.SetBitmap((HBITMAP)b.Detach());
+					}
+					ReleaseDC(screenDC);
+				}
+			}
+			catch(...) {
+			}
 
 
-	//아군 카드
-	myCardName[0] = _T("http://media.services.zam.com/v1/media/byName/hs/cards/enus/animated/HERO_09_premium.gif");
-	myCardName[1] = _T("http://wow.zamimg.com/images/hearthstone/cards/enus/animated/hexfrog_premium.gif");
-	myCardName[2] = _T("http://media.services.zam.com/v1/media/byName/hs/cards/enus/animated/HERO_09_premium.gif");
-	myCardName[3] = _T("http://wow.zamimg.com/images/hearthstone/cards/enus/animated/hexfrog_premium.gif");
-	myCardName[4] = _T("http://media.services.zam.com/v1/media/byName/hs/cards/enus/animated/HERO_09_premium.gif");
-	myCardName[5] = _T("http://media.services.zam.com/v1/media/byName/hs/cards/enus/animated/HERO_09_premium.gif");
-	myCardName[6] = _T("http://wow.zamimg.com/images/hearthstone/cards/enus/animated/hexfrog_premium.gif");
+		}
+		if(!myCardName[i - 1].IsEmpty()) {
+			char imgPath2[12] = {'\0', };
+			int len2 = myCardName[i - 1].GetLength(), size = 0;
+			char *sz2 = new char[len2];
 
-	//적군 카드 링크 불러오기
-	CComVariant Evar1(enemyCardName[0]);
-	CComVariant Evar2(enemyCardName[1]);
-	CComVariant Evar3(enemyCardName[2]);
-	CComVariant Evar4(enemyCardName[3]);
-	CComVariant Evar5(enemyCardName[4]);
-	CComVariant Evar6(enemyCardName[5]);
-	CComVariant Evar7(enemyCardName[6]);
+			sprintf(sz2, "%S", myCardName[i - 1]);
+			sprintf(imgPath2, "res/%d.png", i + FIELD_LINE_SIZE);
+			size = getFileFromHttp(sz2, imgPath2);
 
-	//아군 카드 링크 불러오기
-	CComVariant Mvar1(myCardName[0]);
-	CComVariant Mvar2(myCardName[1]);
-	CComVariant Mvar3(myCardName[2]);
-	CComVariant Mvar4(myCardName[3]);
-	CComVariant Mvar5(myCardName[4]);
-	CComVariant Mvar6(myCardName[5]);
-	CComVariant Mvar7(myCardName[6]);
-	
+			//delete sz2;
+			myCardImages[i - 1].Load(CString(imgPath2));
+			
+			int dimx = 120, dimy = 200;
+			try {
+				if(size > 0) {
 
-	//적군 카드 배치
-	m_card1.Navigate2(&Evar1, NULL, NULL, NULL, NULL);
-	m_card2.Navigate2(&Evar2, NULL, NULL, NULL, NULL);
-	m_card3.Navigate2(&Evar3, NULL, NULL, NULL, NULL);
-	m_card4.Navigate2(&Evar4, NULL, NULL, NULL, NULL);
-	m_card5.Navigate2(&Evar5, NULL, NULL, NULL, NULL);
-	m_card6.Navigate2(&Evar6, NULL, NULL, NULL, NULL);
-	m_card7.Navigate2(&Evar7, NULL, NULL, NULL, NULL);
+					CDC *screenDC = GetDC();
+					CDC mDC;
+					mDC.CreateCompatibleDC(screenDC);
+					CBitmap b;
+					b.CreateCompatibleBitmap(screenDC, dimx, dimy);
 
-	//아군 카드 배치
-	m_card8.Navigate2(&Mvar1, NULL, NULL, NULL, NULL);
-	m_card9.Navigate2(&Mvar2, NULL, NULL, NULL, NULL);
-	m_card10.Navigate2(&Mvar3, NULL, NULL, NULL, NULL);
-	m_card11.Navigate2(&Mvar4, NULL, NULL, NULL, NULL);
-	m_card12.Navigate2(&Mvar5, NULL, NULL, NULL, NULL);
-	m_card13.Navigate2(&Mvar6, NULL, NULL, NULL, NULL);
-	m_card14.Navigate2(&Mvar7, NULL, NULL, NULL, NULL);
+					CBitmap *pob = mDC.SelectObject(&b);
+					mDC.SetStretchBltMode(HALFTONE);
+					myCardImages[i - 1].StretchBlt(mDC.m_hDC, 0, 0, dimx, dimy, 0, 0, myCardImages[i - 1].GetWidth(), myCardImages[i - 1].GetHeight(), SRCCOPY);
+					mDC.SelectObject(pob);
+
+					if(i == 1) {
+						myCard1.SetBitmap((HBITMAP)b.Detach());
+					}
+					else if(i == 2) {
+						myCard2.SetBitmap((HBITMAP)b.Detach());
+					}
+					else if(i == 3) {
+						myCard3.SetBitmap((HBITMAP)b.Detach());
+					}
+					else if(i == 4) {
+						myCard4.SetBitmap((HBITMAP)b.Detach());
+					}
+					else if(i == 5) {
+						myCard5.SetBitmap((HBITMAP)b.Detach());
+					}
+					else if(i == 6) {
+						myCard6.SetBitmap((HBITMAP)b.Detach());
+					}
+					else if(i == 7) {
+						myCard7.SetBitmap((HBITMAP)b.Detach());
+					}
+					ReleaseDC(screenDC);
+				}
+			}
+			catch(...) {
+			}
+			/*
+			CBitmap bitmap;
+			bitmap.Attach(myCardImages[i - 1].Detach());
+
+			((CStatic *)GetDlgItem(IDC_PICTURE_2))->SetBitmap(bitmap);
+			bitmap.Detach();*/
+			//myCard1.SetBitmap(bitmap);
+		}
+
+	}
+
+
+	Invalidate();
+	cout << "=======download image resource end=======" << endl;
 }
 
 void CHearthstoneBotDlg::OnClose()
