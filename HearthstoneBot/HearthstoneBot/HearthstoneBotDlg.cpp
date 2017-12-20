@@ -71,6 +71,20 @@ void CHearthstoneBotDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_PICTURE_13, myCard5);
 	DDX_Control(pDX, IDC_PICTURE_14, myCard6);
 	DDX_Control(pDX, IDC_PICTURE_15, myCard7);
+	DDX_Control(pDX, IDC_TEXT1, txtAttackTarget1);
+	DDX_Control(pDX, IDC_TEXT2, txtAttackTarget2);
+	DDX_Control(pDX, IDC_TEXT3, txtAttackTarget3);
+	DDX_Control(pDX, IDC_TEXT4, txtAttackTarget4);
+	DDX_Control(pDX, IDC_TEXT5, txtAttackTarget5);
+	DDX_Control(pDX, IDC_TEXT6, txtAttackTarget6);
+	DDX_Control(pDX, IDC_TEXT7, txtAttackTarget7);
+	DDX_Control(pDX, IDC_TEXT8, txtAttackTarget8);
+	DDX_Control(pDX, IDC_TEXT9, txtAttackTarget9);
+	DDX_Control(pDX, IDC_TEXT10, txtAttackTarget10);
+	DDX_Control(pDX, IDC_TEXT11, txtAttackTarget11);
+	DDX_Control(pDX, IDC_TEXT12, txtAttackTarget12);
+	DDX_Control(pDX, IDC_TEXT13, txtAttackTarget13);
+	DDX_Control(pDX, IDC_TEXT14, txtAttackTarget14);
 }
 
 BEGIN_MESSAGE_MAP(CHearthstoneBotDlg, CDialogEx)
@@ -78,6 +92,21 @@ BEGIN_MESSAGE_MAP(CHearthstoneBotDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_WM_CLOSE()
+	ON_STN_CLICKED(IDC_PICTURE_2, &CHearthstoneBotDlg::OnStnClickedPicture2)
+	ON_STN_CLICKED(IDC_PICTURE_3, &CHearthstoneBotDlg::OnStnClickedPicture3)
+	ON_STN_CLICKED(IDC_PICTURE_4, &CHearthstoneBotDlg::OnStnClickedPicture4)
+	ON_STN_CLICKED(IDC_PICTURE_5, &CHearthstoneBotDlg::OnStnClickedPicture5)
+	ON_STN_CLICKED(IDC_PICTURE_6, &CHearthstoneBotDlg::OnStnClickedPicture6)
+	ON_STN_CLICKED(IDC_PICTURE_7, &CHearthstoneBotDlg::OnStnClickedPicture7)
+	ON_STN_CLICKED(IDC_PICTURE_8, &CHearthstoneBotDlg::OnStnClickedPicture8)
+	ON_STN_CLICKED(IDC_PICTURE_9, &CHearthstoneBotDlg::OnStnClickedPicture9)
+	ON_STN_CLICKED(IDC_PICTURE_10, &CHearthstoneBotDlg::OnStnClickedPicture10)
+	ON_STN_CLICKED(IDC_PICTURE_11, &CHearthstoneBotDlg::OnStnClickedPicture11)
+	ON_STN_CLICKED(IDC_PICTURE_12, &CHearthstoneBotDlg::OnStnClickedPicture12)
+	ON_STN_CLICKED(IDC_PICTURE_13, &CHearthstoneBotDlg::OnStnClickedPicture13)
+	ON_STN_CLICKED(IDC_PICTURE_14, &CHearthstoneBotDlg::OnStnClickedPicture14)
+	ON_STN_CLICKED(IDC_PICTURE_15, &CHearthstoneBotDlg::OnStnClickedPicture15)
+	ON_STN_CLICKED(IDC_TEXT5, &CHearthstoneBotDlg::OnStnClickedText5)
 END_MESSAGE_MAP()
 
 
@@ -645,6 +674,24 @@ void CHearthstoneBotDlg::cardOutput() {
 	myCard6.SetBitmap(NULL);
 	myCard7.SetBitmap(NULL);
 
+	
+	char defaultBuffer[10] = {'\0', };
+	sprintf(defaultBuffer, "%d", NOT_AVAILABLE);
+	txtAttackTarget1.SetWindowText(CString(defaultBuffer));
+	txtAttackTarget2.SetWindowText(CString(defaultBuffer));
+	txtAttackTarget3.SetWindowText(CString(defaultBuffer));
+	txtAttackTarget4.SetWindowText(CString(defaultBuffer));
+	txtAttackTarget5.SetWindowText(CString(defaultBuffer));
+	txtAttackTarget6.SetWindowText(CString(defaultBuffer));
+	txtAttackTarget7.SetWindowText(CString(defaultBuffer));
+	txtAttackTarget8.SetWindowText(CString(defaultBuffer));
+	txtAttackTarget9.SetWindowText(CString(defaultBuffer));
+	txtAttackTarget10.SetWindowText(CString(defaultBuffer));
+	txtAttackTarget11.SetWindowText(CString(defaultBuffer));
+	txtAttackTarget12.SetWindowText(CString(defaultBuffer));
+	txtAttackTarget13.SetWindowText(CString(defaultBuffer));
+	txtAttackTarget14.SetWindowText(CString(defaultBuffer));
+
 	cout << "=======output card img=======" << endl;
 	for(i = 1; i < FIELD_LINE_SIZE; i += 1) {
 		enemyCardName[i - 1] = fieldCard[FIELD_LINE_SIZE * 0 + i].GetImgUrl();
@@ -681,24 +728,45 @@ void CHearthstoneBotDlg::cardOutput() {
 					mDC.SelectObject(pob);
 					if(i == 1) {
 						enemyCard1.SetBitmap((HBITMAP)b.Detach());
+						char buffer[10] = {'\0', };
+						sprintf(buffer, "%d", bestFieldAttackInfo[0][1]);
+						txtAttackTarget1.SetWindowText(CString(buffer));
 					}
 					else if(i == 2) {
 						enemyCard2.SetBitmap((HBITMAP)b.Detach());
+						char buffer[10] = {'\0', };
+						sprintf(buffer, "%d", bestFieldAttackInfo[0][2]);
+						txtAttackTarget2.SetWindowText(CString(buffer));
 					}
 					else if(i == 3) {
 						enemyCard3.SetBitmap((HBITMAP)b.Detach());
+						char buffer[10] = {'\0', };
+						sprintf(buffer, "%d", bestFieldAttackInfo[0][3]);
+						txtAttackTarget3.SetWindowText(CString(buffer));
 					}
 					else if(i == 4) {
 						enemyCard4.SetBitmap((HBITMAP)b.Detach());
+						char buffer[10] = {'\0', };
+						sprintf(buffer, "%d", bestFieldAttackInfo[0][4]);
+						txtAttackTarget4.SetWindowText(CString(buffer));
 					}
 					else if(i == 5) {
 						enemyCard5.SetBitmap((HBITMAP)b.Detach());
+						char buffer[10] = {'\0', };
+						sprintf(buffer, "%d", bestFieldAttackInfo[0][5]);
+						txtAttackTarget5.SetWindowText(CString(buffer));
 					}
 					else if(i == 6) {
 						enemyCard6.SetBitmap((HBITMAP)b.Detach());
+						char buffer[10] = {'\0', };
+						sprintf(buffer, "%d", bestFieldAttackInfo[0][6]);
+						txtAttackTarget6.SetWindowText(CString(buffer));
 					}
 					else if(i == 7) {
 						enemyCard7.SetBitmap((HBITMAP)b.Detach());
+						char buffer[10] = {'\0', };
+						sprintf(buffer, "%d", bestFieldAttackInfo[0][7]);
+						txtAttackTarget7.SetWindowText(CString(buffer));
 					}
 					ReleaseDC(screenDC);
 				}
@@ -737,24 +805,45 @@ void CHearthstoneBotDlg::cardOutput() {
 
 					if(i == 1) {
 						myCard1.SetBitmap((HBITMAP)b.Detach());
+						char buffer[10] = {'\0', };
+						sprintf(buffer, "%d", bestFieldAttackInfo[1][1]);
+						txtAttackTarget8.SetWindowText(CString(buffer));
 					}
 					else if(i == 2) {
 						myCard2.SetBitmap((HBITMAP)b.Detach());
+						char buffer[10] = {'\0', };
+						sprintf(buffer, "%d", bestFieldAttackInfo[1][2]);
+						txtAttackTarget9.SetWindowText(CString(buffer));
 					}
 					else if(i == 3) {
 						myCard3.SetBitmap((HBITMAP)b.Detach());
+						char buffer[10] = {'\0', };
+						sprintf(buffer, "%d", bestFieldAttackInfo[1][3]);
+						txtAttackTarget10.SetWindowText(CString(buffer));
 					}
 					else if(i == 4) {
 						myCard4.SetBitmap((HBITMAP)b.Detach());
+						char buffer[10] = {'\0', };
+						sprintf(buffer, "%d", bestFieldAttackInfo[1][4]);
+						txtAttackTarget11.SetWindowText(CString(buffer));
 					}
 					else if(i == 5) {
 						myCard5.SetBitmap((HBITMAP)b.Detach());
+						char buffer[10] = {'\0', };
+						sprintf(buffer, "%d", bestFieldAttackInfo[1][5]);
+						txtAttackTarget12.SetWindowText(CString(buffer));
 					}
 					else if(i == 6) {
 						myCard6.SetBitmap((HBITMAP)b.Detach());
+						char buffer[10] = {'\0', };
+						sprintf(buffer, "%d", bestFieldAttackInfo[1][6]);
+						txtAttackTarget13.SetWindowText(CString(buffer));
 					}
 					else if(i == 7) {
 						myCard7.SetBitmap((HBITMAP)b.Detach());
+						char buffer[10] = {'\0', };
+						sprintf(buffer, "%d", bestFieldAttackInfo[1][7]);
+						txtAttackTarget14.SetWindowText(CString(buffer));
 					}
 					ReleaseDC(screenDC);
 				}
@@ -782,4 +871,94 @@ void CHearthstoneBotDlg::OnClose()
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
 	running = false;
 	CDialogEx::OnClose();
+}
+
+void CHearthstoneBotDlg::OnStnClickedPicture2()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	cout << "pic2 clicked" << endl;
+}
+
+
+void CHearthstoneBotDlg::OnStnClickedPicture3()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CHearthstoneBotDlg::OnStnClickedPicture4()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CHearthstoneBotDlg::OnStnClickedPicture5()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CHearthstoneBotDlg::OnStnClickedPicture6()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CHearthstoneBotDlg::OnStnClickedPicture7()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CHearthstoneBotDlg::OnStnClickedPicture8()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CHearthstoneBotDlg::OnStnClickedPicture9()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CHearthstoneBotDlg::OnStnClickedPicture10()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CHearthstoneBotDlg::OnStnClickedPicture11()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CHearthstoneBotDlg::OnStnClickedPicture12()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CHearthstoneBotDlg::OnStnClickedPicture13()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CHearthstoneBotDlg::OnStnClickedPicture14()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CHearthstoneBotDlg::OnStnClickedPicture15()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CHearthstoneBotDlg::OnStnClickedText5()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
